@@ -1,0 +1,80 @@
+#
+# Copyright (C) 2024 The Android Open Source Project
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# Block devices
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/userdata                          u:object_r:userdata_block_device:s0
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/misc                              u:object_r:misc_block_device:s0
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/super                             u:object_r:super_block_device:s0
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/boot(_[ab])?                      u:object_r:boot_block_device:s0
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/init_boot(_[ab])?                 u:object_r:boot_block_device:s0
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/vendor_boot(_[ab])?               u:object_r:boot_block_device:s0
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/dtbo(_[ab])?                      u:object_r:dtbo_block_device:s0
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/vbmeta(_[ab])?                    u:object_r:vbmeta_block_device:s0
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/vbmeta_vendor_dlkm(_[ab])?        u:object_r:vbmeta_block_device:s0
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/vbmeta_system_dlkm(_[ab])?        u:object_r:vbmeta_block_device:s0
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/metadata                          u:object_r:metadata_block_device:s0
+/dev/block/platform/soc/soc:storage-bus/d4281000.mmc/by-name/frp                               u:object_r:frp_block_device:s0
+
+# GPU devices
+/dev/dri(/.*)?                    u:object_r:gpu_device:s0
+/dev/mali[0-9]+                   u:object_r:gpu_device:s0
+
+# DMA-BUF heaps
+/dev/dma_heap/linux,cma           u:object_r:dmabuf_cma_heap_device:s0
+
+# Video devices
+/dev/video[0-9]+                  u:object_r:video_device:s0
+
+# Serial devices
+/dev/ttyS[0-9]+                   u:object_r:serial_device:s0
+
+# I2C devices
+/dev/i2c-[0-9]+                   u:object_r:i2c_device:s0
+
+# SPI devices
+/dev/spidev[0-9]+\.[0-9]+         u:object_r:spidev_device:s0
+
+# GPIO
+/dev/gpiochip[0-9]+               u:object_r:gpio_device:s0
+
+# RTC
+/dev/rtc[0-9]+                    u:object_r:rtc_device:s0
+
+# Swap device
+/dev/block/zram0                  u:object_r:swap_block_device:s0
+
+# HAL binaries
+/vendor/bin/hw/android\.hardware\.graphics\.allocator-service\.minigbm    u:object_r:hal_graphics_allocator_default_exec:s0
+/vendor/bin/hw/android\.hardware\.composer\.hwc3-service\.drm             u:object_r:hal_graphics_composer_default_exec:s0
+/vendor/bin/hw/android\.hardware\.graphics\.allocator@4\.0-service\.minigbm		u:object_r:hal_graphics_allocator_default_exec:s0
+
+# MinigBM libraries
+/vendor/lib(64)?/hw/mapper\.minigbm\.so                                        u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libminigbm_gralloc\.so                                        u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libminigbm_gralloc4_utils\.so                                 u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/hw/gralloc\.minigbm\.so                                       u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/hw/android\.hardware\.graphics\.mapper@4\.0-impl\.minigbm\.so u:object_r:same_process_hal_file:s0
+
+# DRM / Mesa / Vulkan libraries
+/vendor/lib(64)?/libdrm\.so                                                    u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/egl/libGLES_mesa\.so                                          u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/egl/libGLESv1_CM\.so                                          u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/egl/libGLESv2\.so                                             u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/egl/libgallium_dri\.so                                        u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libgallium_dri\.so                                            u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/hw/vulkan\.mesa\.so                                           u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libgbm_mesa\.so                                               u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/libgbm_mesa_wrapper\.so                                       u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/gbm/dri_gbm\.so                                               u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/dri/zink_dri\.so                                              u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/dri/powervr_dri\.so                                           u:object_r:same_process_hal_file:s0
+/vendor/lib(64)?/dri/spacemit_dri\.so                                          u:object_r:same_process_hal_file:s0
+
+# Vendor init scripts
+
+# Vendor init scripts
+/vendor/etc/init/hw/init\.spacemit\.rc          u:object_r:vendor_configs_file:s0
+/vendor/etc/init/hw/init\.spacemit\.usb\.rc     u:object_r:vendor_configs_file:s0
