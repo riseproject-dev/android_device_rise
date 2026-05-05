@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Copyright (C) 2024 The Android Open Source Project
+  SPDX-License-Identifier: Apache-2.0
+-->
+<MediaCodecs>
+    <Encoders>
+        <MediaCodec name="c2.android.aac.encoder" type="audio/mp4a-latm">
+            <Limit name="channel-count" max="6" />
+            <Limit name="sample-rate" ranges="8000,11025,12000,16000,22050,24000,32000,44100,48000" />
+            <Limit name="bitrate" range="8000-960000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.amrnb.encoder" type="audio/3gpp">
+            <Limit name="channel-count" max="1" />
+            <Limit name="sample-rate" ranges="8000" />
+            <Limit name="bitrate" range="4750-12200" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.amrwb.encoder" type="audio/amr-wb">
+            <Limit name="channel-count" max="1" />
+            <Limit name="sample-rate" ranges="16000" />
+            <Limit name="bitrate" range="6600-23850" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.flac.encoder" type="audio/flac">
+            <Limit name="channel-count" max="2" />
+            <Limit name="sample-rate" ranges="1-655350" />
+            <Limit name="bitrate" range="1-21000000" />
+            <Limit name="complexity" range="0-8" default="5" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.opus.encoder" type="audio/opus">
+            <Limit name="channel-count" max="2" />
+            <Limit name="sample-rate" ranges="8000,12000,16000,24000,48000" />
+            <Limit name="bitrate" range="500-512000" />
+            <Limit name="complexity" range="0-10" default="5" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.vp8.encoder" type="video/x-vnd.on2.vp8">
+            <Limit name="size" min="2x2" max="2048x2048" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="bitrate" range="1-40000000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.vp9.encoder" type="video/x-vnd.on2.vp9">
+            <Limit name="size" min="2x2" max="2048x2048" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="bitrate" range="1-40000000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.av1.encoder" type="video/av01">
+            <Limit name="size" min="2x2" max="2048x2048" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="bitrate" range="1-40000000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.avc.encoder" type="video/avc">
+            <Limit name="size" min="16x16" max="2048x2048" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="block-size" value="16x16" />
+            <Limit name="bitrate" range="1-40000000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.hevc.encoder" type="video/hevc">
+            <Limit name="size" min="2x2" max="2048x2048" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="bitrate" range="1-40000000" />
+        </MediaCodec>
+    </Encoders>
+
+    <Decoders>
+        <MediaCodec name="c2.android.aac.decoder" type="audio/mp4a-latm">
+            <Limit name="channel-count" max="8" />
+            <Limit name="sample-rate" ranges="7350,8000,11025,12000,16000,22050,24000,32000,44100,48000,64000,88200,96000" />
+            <Limit name="bitrate" range="8000-960000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.amrnb.decoder" type="audio/3gpp">
+            <Limit name="channel-count" max="1" />
+            <Limit name="sample-rate" ranges="8000" />
+            <Limit name="bitrate" range="4750-12200" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.amrwb.decoder" type="audio/amr-wb">
+            <Limit name="channel-count" max="1" />
+            <Limit name="sample-rate" ranges="16000" />
+            <Limit name="bitrate" range="6600-23850" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.flac.decoder" type="audio/flac">
+            <Limit name="channel-count" max="8" />
+            <Limit name="sample-rate" ranges="1-655350" />
+            <Limit name="bitrate" range="1-21000000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.g711.alaw.decoder" type="audio/g711-alaw">
+            <Limit name="channel-count" max="1" />
+            <Limit name="sample-rate" ranges="8000-48000" />
+            <Limit name="bitrate" range="64000-384000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.g711.mlaw.decoder" type="audio/g711-mlaw">
+            <Limit name="channel-count" max="1" />
+            <Limit name="sample-rate" ranges="8000-48000" />
+            <Limit name="bitrate" range="64000-384000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.gsm.decoder" type="audio/gsm">
+            <Limit name="channel-count" max="1" />
+            <Limit name="sample-rate" ranges="8000" />
+            <Limit name="bitrate" range="13000-13000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.mp3.decoder" type="audio/mpeg">
+            <Limit name="channel-count" max="2" />
+            <Limit name="sample-rate" ranges="8000,11025,12000,16000,22050,24000,32000,44100,48000" />
+            <Limit name="bitrate" range="8000-320000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.opus.decoder" type="audio/opus">
+            <Limit name="channel-count" max="8" />
+            <Limit name="sample-rate" ranges="48000" />
+            <Limit name="bitrate" range="6000-510000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.raw.decoder" type="audio/raw">
+            <Limit name="channel-count" max="8" />
+            <Limit name="sample-rate" ranges="8000-192000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.vorbis.decoder" type="audio/vorbis">
+            <Limit name="channel-count" max="8" />
+            <Limit name="sample-rate" ranges="8000-96000" />
+            <Limit name="bitrate" range="32000-500000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.avc.decoder" type="video/avc">
+            <Limit name="size" min="16x16" max="4096x4096" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="block-size" value="16x16" />
+            <Limit name="bitrate" range="1-120000000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.hevc.decoder" type="video/hevc">
+            <Limit name="size" min="2x2" max="4096x4096" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="bitrate" range="1-120000000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.h263.decoder" type="video/3gpp">
+            <Limit name="size" min="2x2" max="352x288" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="bitrate" range="1-384000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.mpeg4.decoder" type="video/mp4v-es">
+            <Limit name="size" min="2x2" max="2048x2048" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="bitrate" range="1-40000000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.vp8.decoder" type="video/x-vnd.on2.vp8">
+            <Limit name="size" min="2x2" max="4096x4096" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="bitrate" range="1-120000000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.vp9.decoder" type="video/x-vnd.on2.vp9">
+            <Limit name="size" min="2x2" max="4096x4096" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="bitrate" range="1-120000000" />
+        </MediaCodec>
+        <MediaCodec name="c2.android.av1.decoder" type="video/av01">
+            <Limit name="size" min="2x2" max="4096x4096" />
+            <Limit name="alignment" value="2x2" />
+            <Limit name="bitrate" range="1-120000000" />
+        </MediaCodec>
+    </Decoders>
+</MediaCodecs>
