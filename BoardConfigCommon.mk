@@ -5,6 +5,8 @@
 #
 
 # Architecture
+# TARGET_ARCH_VARIANT is set per-board (e.g. "x60" for K1) so that future
+# SpaceMit SoCs with different CPU cores can override it independently.
 TARGET_ARCH := riscv64
 TARGET_ARCH_VARIANT :=
 TARGET_CPU_ABI := riscv64
@@ -24,16 +26,26 @@ TARGET_NO_BOOTLOADER := true
 TARGET_KERNEL_ARCH := riscv64
 BOARD_KERNEL_CMDLINE := init=/init
 BOARD_KERNEL_CMDLINE += firmware_class.path=/vendor/firmware
-# ifneq ($(TARGET_BUILD_VARIANT), user)
+BOARD_KERNEL_CMDLINE += swiotlb=65536
+BOARD_KERNEL_CMDLINE += deferred_probe_timeout=30
+
+# Bring-up-only perf-killing flags removed on ALL build variants:
+#   clk_ignore_unused / pd_ignore_unused : keep clocks/PD gates open, drives
+#     idle power up and prevents the driver-quiescing path from running.
+#   loglevel=8 / log_buf_len=32M       : forces every printk to the console
+#     (~ms each) and inflates the log buffer 8x.  Major perf hit on all
+#     variants (incl. userdebug).  Re-add temporarily if you need them
+#     during a specific driver bring-up.
+#   printk.devkmsg=on                  : exposes /dev/kmsg to userspace
+#     readers, unnecessary in production and on dev builds with logcat.
+
+# Console + early UART kept on userdebug/eng for boot diagnostics (low perf
+# impact since they don't open PM gates or flood printk).
+ifneq ($(TARGET_BUILD_VARIANT),user)
 BOARD_KERNEL_CMDLINE += console=ttyS0,115200
-BOARD_KERNEL_CMDLINE += printk.devkmsg=on
-# endif
 BOARD_KERNEL_CMDLINE += earlycon=sbi earlycon=uart8250,mmio32,0xd4017000
 BOARD_KERNEL_CMDLINE += earlyprintk
-BOARD_KERNEL_CMDLINE += clk_ignore_unused pd_ignore_unused
-BOARD_KERNEL_CMDLINE += swiotlb=65536
-BOARD_KERNEL_CMDLINE += loglevel=8 log_buf_len=32M
-BOARD_KERNEL_CMDLINE += deferred_probe_timeout=30
+endif
 # BOARD_KERNEL_CMDLINE += androidboot.first_stage_console=1
 
 
