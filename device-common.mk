@@ -214,6 +214,13 @@ PRODUCT_SOONG_NAMESPACES += \
 PRODUCT_PACKAGES += \
     Launcher3QuickStep
 
+# WebView provider (riscv64). Not K1-specific — shared by all SpacemiT K1-family
+# boards. Chromium ships no official riscv64 WebView prebuilt, so import the
+# locally-built system_webview_apk (com.android.webview) from common/webview/
+# rather than patching external/chromium-webview (which would require forking
+# that AOSP repo). com.android.webview is availableByDefault in config_webview_packages.xml.
+PRODUCT_PACKAGES += webview_riscv64
+
 
 # Storage: for factory reset protection feature
 PRODUCT_PROPERTY_OVERRIDES += \
