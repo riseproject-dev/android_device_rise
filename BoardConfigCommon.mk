@@ -131,7 +131,7 @@ BOARD_AVB_VBMETA_SYSTEM_DLKM_ROLLBACK_INDEX_LOCATION := 5
 
 # SELinux
 BOARD_SEPOLICY_DIRS += device/spacemit/common/sepolicy/vendor
-BOARD_SEPOLICY_DIRS += hardware/baylibre/usb/aidl/sepolicy
+BOARD_SEPOLICY_DIRS += hardware/generic/usb/aidl/sepolicy
 
 # VNDK
 BOARD_VNDK_VERSION := current
