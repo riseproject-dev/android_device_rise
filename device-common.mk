@@ -234,6 +234,13 @@ PRODUCT_PACKAGES += \
 # that AOSP repo). com.android.webview is availableByDefault in config_webview_packages.xml.
 PRODUCT_PACKAGES += webview_riscv64
 
+# SettingsProvider defaults shared by all SpacemiT boards (K1, K3):
+# def_screen_off_timeout=-1 keeps the screen from ever sleeping, so the SoC never
+# idles into s2idle suspend -- a bring-up board with no functional display/input
+# stays reachable over adb/serial. Plus stay_on_while_plugged_in and no lockscreen.
+# Board-agnostic (no density/resolution), so it lives in common, not per-board.
+DEVICE_PACKAGE_OVERLAYS += device/spacemit/common/overlay
+
 
 # Storage: for factory reset protection feature
 PRODUCT_PROPERTY_OVERRIDES += \
