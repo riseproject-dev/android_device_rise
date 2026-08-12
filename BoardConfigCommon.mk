@@ -26,7 +26,6 @@ TARGET_NO_BOOTLOADER := true
 TARGET_KERNEL_ARCH := riscv64
 BOARD_KERNEL_CMDLINE := init=/init
 BOARD_KERNEL_CMDLINE += firmware_class.path=/vendor/firmware
-BOARD_KERNEL_CMDLINE += swiotlb=65536
 BOARD_KERNEL_CMDLINE += deferred_probe_timeout=30
 
 # Bring-up-only perf-killing flags removed on ALL build variants:
@@ -43,7 +42,7 @@ BOARD_KERNEL_CMDLINE += deferred_probe_timeout=30
 # impact since they don't open PM gates or flood printk).
 ifneq ($(TARGET_BUILD_VARIANT),user)
 BOARD_KERNEL_CMDLINE += console=ttyS0,115200
-BOARD_KERNEL_CMDLINE += earlycon=sbi earlycon=uart8250,mmio32,0xd4017000
+BOARD_KERNEL_CMDLINE += earlycon=uart8250,mmio32,0xd4017000
 BOARD_KERNEL_CMDLINE += earlyprintk
 endif
 # BOARD_KERNEL_CMDLINE += androidboot.first_stage_console=1
