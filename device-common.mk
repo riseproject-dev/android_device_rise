@@ -197,8 +197,16 @@ PRODUCT_COPY_FILES += \
     frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usb_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/a2dp_in_audio_policy_configuration_7_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/a2dp_in_audio_policy_configuration_7_0.xml \
     frameworks/av/services/audiopolicy/config/bluetooth_audio_policy_configuration_7_0.xml:$(TARGET_COPY_OUT_VENDOR)/etc/bluetooth_audio_policy_configuration_7_0.xml \
-    hardware/generic/audio/audio_effects_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects_config.xml \
     hardware/generic/audio/mixer_controls.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_controls.xml
+
+# audio_effects_config.xml is copied, not installed through
+# hardware/generic/audio/audio_effects.mk. That makefile sets the soong config
+# var hardware_interfaces_audio/use_default_audio_effects_config, which gates
+# both our audio_effects_config.xml-generic and the AOSP audio_effects_config.xml
+# in hardware/interfaces/audio/aidl/default. Setting it enables both, and they
+# install to the same path, so the build fails on overriding commands.
+PRODUCT_COPY_FILES += \
+    hardware/generic/audio/audio_effects_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_effects_config.xml
 
 # Media codecs
 PRODUCT_COPY_FILES += \
