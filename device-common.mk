@@ -97,6 +97,12 @@ PRODUCT_PACKAGES += \
     com.android.hardware.gatekeeper.nonsecure
 
 # Graphics - HWComposer + Gralloc
+# No legacy gralloc0 module here on purpose: Mesa reads gralloc metadata through
+# its IMapper5 u_gralloc backend, which talks to mapper.minigbm directly. That
+# backend only exists if Mesa is built with the 'ui' dependency available -- see
+# subprojects/vndk/meson.build in the Mesa fork. Without it Mesa falls through to
+# its fallback gralloc, which cannot resolve a DRM fourcc for YUV, and camera
+# NV12 frames fail to import as AHardwareBuffers.
 PRODUCT_PACKAGES += \
     android.hardware.composer.hwc3-service.drm \
     android.hardware.graphics.allocator-service.minigbm \
