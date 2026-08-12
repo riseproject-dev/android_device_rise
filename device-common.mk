@@ -25,8 +25,10 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/developer_gsi_keys.mk)
 # Dynamic partitions
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 
-# API level
-PRODUCT_SHIPPING_API_LEVEL := 35
+# API level. Android 17 is SDK 37, which maps to vendor API level 202604
+# (build/make/core/product_config.mk: sdk-to-vendor-api-level). That level
+# turns on CHECK_DEV_TYPE_VIOLATIONS and TARGET_RESTRICTS_ASHMEM_USAGE.
+PRODUCT_SHIPPING_API_LEVEL := 37
 
 # Set Vendor SPL to match platform
 VENDOR_SECURITY_PATCH = $(PLATFORM_SECURITY_PATCH)
