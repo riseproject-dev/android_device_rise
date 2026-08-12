@@ -1,4 +1,5 @@
 gpu_access(surfaceflinger)
+get_prop(surfaceflinger, vendor_graphics_prop)
 
 allow surfaceflinger hal_graphics_mapper_service:service_manager find;
 allow surfaceflinger gpu_device:chr_file { open read write ioctl map };
