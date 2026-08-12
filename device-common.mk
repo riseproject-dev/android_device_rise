@@ -151,20 +151,9 @@ PRODUCT_PACKAGES += \
     hwservicemanager \
     android.hidl.allocator@1.0-service
 
-# Fstab
-PRODUCT_PACKAGES += \
-    fstab.k1 \
-    fstab.k1.vendor_ramdisk
-
-# Init
-PRODUCT_COPY_FILES += \
-    device/spacemit/k1/init.k1.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.k1.rc \
-    device/spacemit/k1/init.k1.usb.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.k1.usb.rc \
-    device/spacemit/k1/ueventd.k1.rc:$(TARGET_COPY_OUT_VENDOR)/etc/ueventd.rc
-
-# GPU firmware (PowerVR)
-PRODUCT_COPY_FILES += \
-    device/spacemit/k1/firmware/powervr/rogue_36.29.52.182_v1.fw:$(TARGET_COPY_OUT_VENDOR)/firmware/powervr/rogue_36.29.52.182_v1.fw
+# Per-board bits (fstab / init / ueventd / GPU firmware) live in each board's
+# device/spacemit/<board>/device.mk — they are SoC/board-specific (fstab mmc
+# node, UDC controller, PowerVR firmware revision), NOT common.
 
 # Permissions
 PRODUCT_COPY_FILES += \
@@ -182,10 +171,9 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.wifi.direct.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.direct.xml \
     device/linaro/hikey/etc/permissions/android.hardware.screen.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.screen.xml
 
-# Audio configuration
+# Audio configuration (generic). Board-specific audio_policy / codec config
+# (e.g. the K1 ES8326) lives in the per-board device.mk.
 PRODUCT_COPY_FILES += \
-    device/spacemit/k1/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
-    device/spacemit/k1/audio/primary_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/primary_audio_policy_configuration.xml \
     frameworks/av/services/audiopolicy/config/audio_policy_volumes.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_volumes.xml \
     frameworks/av/services/audiopolicy/config/default_volume_tables.xml:$(TARGET_COPY_OUT_VENDOR)/etc/default_volume_tables.xml \
     frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
