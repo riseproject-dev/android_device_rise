@@ -79,6 +79,15 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     com.android.hardware.power
 
+# Android 17 moved wificond to system_ext behind RELEASE_DISABLE_WIFICOND,
+# which is true for every release config, and only re-adds it through
+# PRODUCT_PACKAGES_SHIPPING_API_LEVEL_33, well below ours. The SpacemiT
+# boards leave BOARD_WLAN_DEVICE unset to select libwifi-hal-fallback and
+# let the framework drive the device over plain nl80211 through wificond,
+# so it has to come back explicitly.
+PRODUCT_PACKAGES += \
+    wificond
+
 # KeyMint (software, no TEE)
 PRODUCT_PACKAGES += \
     com.android.hardware.keymint.rust_nonsecure
