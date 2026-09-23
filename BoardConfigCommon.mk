@@ -44,9 +44,6 @@ ifneq ($(TARGET_BUILD_VARIANT),user)
 BOARD_KERNEL_CMDLINE += console=ttyS0,115200
 BOARD_KERNEL_CMDLINE += earlycon=uart8250,mmio32,0xd4017000
 BOARD_KERNEL_CMDLINE += earlyprintk
-# Costs red-zoning and poisoning on every kmalloc, and disables the SLUB
-# fastpath and cache merging, so drop this once the kernel side is fixed.
-#
 # The X100 does not implement Zacas, so SLUB never sets __CMPXCHG_DOUBLE on its
 # caches and kmalloc_nolock() bails out unconditionally (mm/slub.c). That kills
 # every BPF local storage allocation, which makes netd abort and, with the
@@ -54,8 +51,14 @@ BOARD_KERNEL_CMDLINE += earlyprintk
 # kmem_cache_debug() true, which is the one case where kmalloc_nolock() is
 # allowed to fall through to its trylock path.
 #
+# Any SLAB_DEBUG_FLAGS bit is enough for that, so only enable consistency
+# checks (F), and only on the kmalloc-* caches kmalloc_nolock() allocates
+# from. Full slab_debug adds red-zoning, poisoning and a stack trace on every
+# alloc and free, and takes every cache off the SLUB fastpath. Drop this once
+# the kernel side is fixed.
+#
 # Still best-effort: the trylock can fail and return NULL under contention.
-BOARD_KERNEL_CMDLINE += slab_debug
+BOARD_KERNEL_CMDLINE += slab_debug=F,kmalloc-*
 endif
 # BOARD_KERNEL_CMDLINE += androidboot.first_stage_console=1
 
