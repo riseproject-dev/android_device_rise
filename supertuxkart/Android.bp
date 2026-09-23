@@ -1,0 +1,30 @@
+package {
+    default_applicable_licenses: ["device_spacemit_common_supertuxkart_license"],
+}
+
+license {
+    name: "device_spacemit_common_supertuxkart_license",
+    package_name: "SuperTuxKart",
+    visibility: [":__subpackages__"],
+    license_kinds: [
+        "SPDX-license-identifier-GPL-3.0-or-later",
+        "SPDX-license-identifier-CC-BY",
+        "SPDX-license-identifier-CC-BY-SA",
+    ],
+    license_text: ["COPYING"],
+}
+
+// SuperTuxKart ships no riscv64 release, so this is the APK built by
+// android/make.sh from the riscv64 port of stk-code (COMPILE_ARCH=riscv64).
+//
+// It keeps its own signature so that later builds installed with adb update
+// it instead of clashing with it. That is what preprocessed is for: the
+// native libraries are already stored uncompressed and page-aligned, so the
+// build system has nothing to rewrite in the APK.
+android_app_import {
+    name: "SuperTuxKart",
+    apk: "SuperTuxKart.apk",
+    product_specific: true,
+    presigned: true,
+    preprocessed: true,
+}
