@@ -360,11 +360,11 @@ mode_all() {
     flash_android_boot
     flash_super
 
-    if [ "${wipe}" = "false" ]; then
+    if [ "${wipe}" = "true" ]; then
+        flash_userdata
+    else
         info "Skipping userdata (use --wipe for clean install)"
     fi
-    # Always flash userdata during development (matches K1 flasher behaviour)
-    flash_userdata
 
     echo ""
     ok "Flash complete! Rebooting..."
@@ -417,8 +417,9 @@ mode_android() {
         warn "super.img not found, skipping"
     fi
 
-    # Always flash userdata during development
-    flash_userdata
+    if [ "${wipe}" = "true" ]; then
+        flash_userdata
+    fi
 
     echo ""
     ok "Done! Rebooting..."
@@ -457,8 +458,9 @@ mode_dfu() {
     flash_android_boot
     flash_super
 
-    # Always flash userdata during development
-    flash_userdata
+    if [ "${wipe}" = "true" ]; then
+        flash_userdata
+    fi
 
     echo ""
     ok "Flash complete! Rebooting..."
@@ -550,7 +552,9 @@ main() {
                 flash_android_gpt
                 flash_android_boot
                 flash_super
-                [ "${do_wipe}" = true ] && flash_userdata
+                if [ "${do_wipe}" = true ]; then
+                    flash_userdata
+                fi
                 ;;
         esac
         echo ""
