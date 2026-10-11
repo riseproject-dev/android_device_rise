@@ -444,7 +444,7 @@ mode_dfu() {
     require_fastboot
     check_files u-boot.itb fw_dynamic.itb env.bin factory/FSBL.bin \
                 factory/bootinfo_spinor.bin partition_nor.json \
-                partition_android.json boot.img super.img vbmeta.img
+                boot.img super.img vbmeta.img
 
     echo ""
     echo -e "${BOLD}=== Full DFU flash ===${NC}"
