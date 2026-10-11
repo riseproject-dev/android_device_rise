@@ -1,0 +1,9 @@
+kernel/drivers/pinctrl/pinctrl-a210.ko
+kernel/drivers/gpio/gpio-dwapb.ko
+kernel/drivers/clk/zhihe/zhihe-clk-core.ko
+kernel/drivers/clk/zhihe/clk-a210.ko
+kernel/drivers/pmdomain/zhihe/a210-pd.ko
+kernel/drivers/reset/reset-a210.ko
+kernel/drivers/watchdog/dw_wdt.ko
+kernel/drivers/mmc/host/sdhci-of-dwcmshc.ko
+kernel/drivers/mmc/host/cqhci.ko

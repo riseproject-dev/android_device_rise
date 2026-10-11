@@ -1,0 +1,32 @@
+on early-init
+    mount debugfs debugfs /sys/kernel/debug mode=0755
+
+on init
+    symlink /sdcard /storage/sdcard0
+
+    # cpu0-3 (little C908) vs cpu4-7 (big C920); restrict background work
+    # to the little cluster, as device/linaro/hikey's init.common.rc does.
+    write /dev/cpuset/background/cpus 0-3
+    write /dev/cpuset/system-background/cpus 0-3
+    write /dev/cpuset/restricted/cpus 0-3
+
+on zygote-start
+    mkdir /data/vendor/wifi 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa/sockets 0770 wifi wifi
+
+on fs
+    mount_all /vendor/etc/fstab.a210 --early
+
+on late-fs
+    mount_all /vendor/etc/fstab.a210 --late
+
+    # zram dont's auto-loads either
+    insmod /system_dlkm/lib/modules/zsmalloc.ko
+    insmod /system_dlkm/lib/modules/zram.ko
+    swapon_all /vendor/etc/fstab.a210
+
+# Testing-only: hold a permanent wake lock so the board doesn't suspend
+# (no input path to wake it). Drop once input exists.
+on boot
+    write /sys/power/wake_lock a210-testing-stay-awake

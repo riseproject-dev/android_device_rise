@@ -16,7 +16,7 @@ import subprocess
 
 
 # Projects whose .gitattributes routes files through LFS, as manifest paths.
-LFS_PROJECTS = ("device/spacemit/common",)
+LFS_PROJECTS = ("device/rise",)
 
 
 def _pull(worktree):

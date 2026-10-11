@@ -1,0 +1,18 @@
+{
+  "board": "k3",
+  "source_repository": "git@github.com:riseproject-dev/android_kernel_common.git",
+  "source_commit": "533b5182a17e146b0c8e19068bf3e28f06cfb6d5",
+  "source_clean": true,
+  "device_repository": "git@github.com:riseproject-dev/android_kernel_device.git",
+  "device_commit": "f6db9f14366ecfceb8b746030b021a6263ba6c49",
+  "target": "//devices/rise/spacemit/spacemit_soc:spacemit_k3_dist",
+  "bazel_config": "fast",
+  "device_bazelrc": "spacemit_k3",
+  "config_sha256": {
+    "BUILD.bazel": "3172baa29377afad2eb69c09b231ac41fc4f02941352e7bb59f0a01d59c0ef65",
+    "spacemit_k3.fragment": "9f7553a305b11822798a2897130483f20618e6ff112b5ae0118c790e9e6271db",
+    "device.bazelrc": "46af347466f1a0b8ec5b042489bb1311a13497976d8f38a4b9b6ce205d32bb0e"
+  },
+  "built_before_device_commit": true,
+  "committed_configuration_matches_build_inputs": true
+}

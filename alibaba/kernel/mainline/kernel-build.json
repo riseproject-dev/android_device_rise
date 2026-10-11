@@ -1,0 +1,18 @@
+{
+  "board": "a210",
+  "source_repository": "git@github.com:riseproject-dev/android_kernel_common.git",
+  "source_commit": "23492d5d4537d19edd309eb3de881db0106e5ce6",
+  "source_clean": true,
+  "device_repository": "git@github.com:riseproject-dev/android_kernel_device.git",
+  "device_commit": "f6db9f14366ecfceb8b746030b021a6263ba6c49",
+  "target": "//devices/rise/alibaba/a210:zhihe_a210_dist",
+  "bazel_config": "fast",
+  "device_bazelrc": "zhihe_a210",
+  "config_sha256": {
+    "BUILD.bazel": "d0634a5d1f27df03c3292391589f64888cbfc6ddf63488920f0b9844c88a0ee8",
+    "zhihe_a210.fragment": "c77fa6b27d84e199b34b1d81a2a950734ca24593d96432d7c24e31fe155bc109",
+    "device.bazelrc": "2316c87544b365d60e2dbeac49fedb7f8cdc54d0dec8aece41b914de5e84d576"
+  },
+  "built_before_device_commit": true,
+  "committed_configuration_matches_build_inputs": true
+}
