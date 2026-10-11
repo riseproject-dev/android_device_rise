@@ -49,12 +49,12 @@ else
     echo "###### Start the flashing tool"
     if [ -e bootzero-rvbl.bin ]; then
         "$FASTBOOT" "$@" flash ram bootzero-rvbl.bin || { echo "$FAIL"; exit 1; }
-        "$FASTBOOT" "$@" reboot
+        "$FASTBOOT" "$@" reboot || { echo "$FAIL"; exit 1; }
         "$FASTBOOT" "$@" flash ram spl-with-fit-rvbl.bin || { echo "$FAIL"; exit 1; }
-        "$FASTBOOT" "$@" reboot
+        "$FASTBOOT" "$@" reboot || { echo "$FAIL"; exit 1; }
     else
         "$FASTBOOT" "$@" flash ram spl-with-fit-rvbl.bin || { echo "$FAIL"; exit 1; }
-        "$FASTBOOT" "$@" reboot
+        "$FASTBOOT" "$@" reboot || { echo "$FAIL"; exit 1; }
     fi
     echo "###### Wait for the flashing tool to be ready"
     sleep 5
@@ -94,6 +94,6 @@ if [ "$wipe" = true ]; then
 fi
 echo "###### Erase misc, select slot a"
 "$FASTBOOT" "$@" erase misc || { echo "$FAIL"; exit 1; }
-"$FASTBOOT" "$@" set_active a
+"$FASTBOOT" "$@" set_active a || { echo "$FAIL"; exit 1; }
 
 echo "###### Images flashed success ######"
