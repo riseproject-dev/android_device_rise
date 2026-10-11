@@ -1,3 +1,0 @@
-# Mesa3D does not need execmem (no JIT like SwiftShader)
-gpu_access(system_server)
-get_prop(system_server, vendor_graphics_prop)

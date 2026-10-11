@@ -4,38 +4,21 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
+include device/rise/common/BoardConfigCommon.mk
+
 # Architecture
 # Heterogeneous C908 (little) + C920 (big) cluster pair; neither implements
 # Zvbb, so use the "a210" variant (build/soong/{cc,rust}/config/riscv64_device.go)
 # instead of the riscv64 baseline.
-TARGET_ARCH := riscv64
 TARGET_ARCH_VARIANT := a210
-TARGET_CPU_ABI := riscv64
-TARGET_CPU_VARIANT := generic
-
-# 64-bit only
-TARGET_SUPPORTS_32_BIT_APPS := false
-TARGET_SUPPORTS_64_BIT_APPS := true
 
 # Platform
 TARGET_BOARD_PLATFORM := a210
 TARGET_BOOTLOADER_BOARD_NAME := a210
 
-# Metadata partition (creates /metadata mount point in system image)
-BOARD_USES_METADATA_PARTITION := true
-
-# Bootloader: U-Boot 2024.10 + OpenSBI, built out-of-tree, staged as prebuilts.
-TARGET_NO_BOOTLOADER := true
-
 # Kernel
-TARGET_KERNEL_ARCH := riscv64
 KERNEL_MODULES_PATH := device/rise/alibaba/kernel/mainline
 TARGET_PREBUILT_KERNEL := $(KERNEL_MODULES_PATH)/Image
-
-# Kernel command line: console as uart4. deferred_probe_timeout=30 as a safety margin.
-BOARD_KERNEL_CMDLINE := init=/init
-BOARD_KERNEL_CMDLINE += firmware_class.path=/vendor/firmware
-BOARD_KERNEL_CMDLINE += deferred_probe_timeout=30
 
 ifneq ($(TARGET_BUILD_VARIANT),user)
 BOARD_KERNEL_CMDLINE += earlycon
@@ -90,11 +73,6 @@ BOARD_SYSTEM_KERNEL_MODULES := $(wildcard $(KERNEL_MODULES_PATH)/system_dlkm/*.k
 BOARD_SYSTEM_KERNEL_MODULES_LOAD := $(BOARD_SYSTEM_KERNEL_MODULES)
 
 # Boot image
-BOARD_BOOT_HEADER_VERSION := 4
-BOARD_INIT_BOOT_HEADER_VERSION := 4
-BOARD_INCLUDE_DTB_IN_BOOTIMG := true
-BOARD_RAMDISK_USE_LZ4 := true
-BOARD_KERNEL_PAGESIZE := 4096
 BOARD_KERNEL_BASE := 0x80000000
 BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOT_HEADER_VERSION) --pagesize $(BOARD_KERNEL_PAGESIZE) --kernel_offset 0x200000 --ramdisk_offset 0x04000000
 BOARD_MKBOOTIMG_INIT_ARGS := --header_version $(BOARD_INIT_BOOT_HEADER_VERSION)
@@ -111,96 +89,23 @@ BOARD_BOOTCONFIG += androidboot.vendor.apex.com.android.hardware.keymint=com.and
 BOARD_BOOTCONFIG += androidboot.vendor.apex.com.android.hardware.gatekeeper=com.android.hardware.gatekeeper.nonsecure
 BOARD_BOOTCONFIG += androidboot.selinux=permissive
 
-# GKI
-BOARD_USES_GENERIC_KERNEL_IMAGE := true
-
 # Partition sizes derived from the prebuilt GPT via sgdisk -p (dtbo unused for now).
-BOARD_BOOTIMAGE_PARTITION_SIZE := 41943040
-BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 33554432
-BOARD_INIT_BOOT_IMAGE_PARTITION_SIZE := 8388608
 # BOARD_DTBOIMG_PARTITION_SIZE := 8388608
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 57411600896
 
 # Dynamic partitions
-TARGET_USE_DYNAMIC_PARTITIONS := true
-BOARD_BUILD_SUPER_IMAGE_BY_DEFAULT := true
-BOARD_SUPER_PARTITION_SIZE := 4831838208
 BOARD_SUPER_PARTITION_GROUPS := a210_dynamic_partitions
 BOARD_A210_DYNAMIC_PARTITIONS_PARTITION_LIST := system vendor vendor_dlkm system_dlkm
 BOARD_A210_DYNAMIC_PARTITIONS_SIZE := 2411724800
 
-# Filesystem
-BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := ext4
-BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
-BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
-TARGET_COPY_OUT_VENDOR := vendor
-
-# Vendor DLKM (USB3.1 gadget - not needed to mount rootfs or in recovery,
-# device/rise/alibaba/kernel/mainline/vendor_dlkm)
-BOARD_USES_VENDOR_DLKMIMAGE := true
-BOARD_VENDOR_DLKMIMAGE_FILE_SYSTEM_TYPE := ext4
-TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
-
-# System DLKM (generic GKI modules, device/rise/alibaba/kernel/mainline/system_dlkm)
-BOARD_USES_SYSTEM_DLKMIMAGE := true
-BOARD_SYSTEM_DLKMIMAGE_FILE_SYSTEM_TYPE := ext4
-TARGET_COPY_OUT_SYSTEM_DLKM := system_dlkm
-
-# A/B OTA
-AB_OTA_UPDATER := true
-AB_OTA_PARTITIONS := boot system vendor vendor_boot init_boot vendor_dlkm system_dlkm vbmeta vbmeta_vendor_dlkm vbmeta_system_dlkm
-
 # Recovery
-TARGET_NO_RECOVERY := true
-BOARD_MOVE_RECOVERY_RESOURCES_TO_VENDOR_BOOT := true
-BOARD_MOVE_GSI_AVB_KEYS_TO_VENDOR_BOOT := true
 TARGET_RECOVERY_FSTAB_GENRULE := gen_fstab_a210
 
-# AVB
-BOARD_AVB_ENABLE := true
-BOARD_AVB_ALGORITHM := SHA256_RSA4096
-BOARD_AVB_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
-
-BOARD_AVB_BOOT_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
-BOARD_AVB_BOOT_ALGORITHM := SHA256_RSA4096
-BOARD_AVB_BOOT_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
-BOARD_AVB_BOOT_ROLLBACK_INDEX_LOCATION := 2
-
-BOARD_AVB_INIT_BOOT_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
-BOARD_AVB_INIT_BOOT_ALGORITHM := SHA256_RSA4096
-BOARD_AVB_INIT_BOOT_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
-BOARD_AVB_INIT_BOOT_ROLLBACK_INDEX_LOCATION := 3
-
-BOARD_AVB_VBMETA_CUSTOM_PARTITIONS := vendor_dlkm system_dlkm
-
-BOARD_AVB_VBMETA_VENDOR_DLKM := vendor_dlkm
-BOARD_AVB_VBMETA_VENDOR_DLKM_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
-BOARD_AVB_VBMETA_VENDOR_DLKM_ALGORITHM := SHA256_RSA4096
-BOARD_AVB_VBMETA_VENDOR_DLKM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
-BOARD_AVB_VBMETA_VENDOR_DLKM_ROLLBACK_INDEX_LOCATION := 4
-
-BOARD_AVB_VBMETA_SYSTEM_DLKM := system_dlkm
-BOARD_AVB_VBMETA_SYSTEM_DLKM_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
-BOARD_AVB_VBMETA_SYSTEM_DLKM_ALGORITHM := SHA256_RSA4096
-BOARD_AVB_VBMETA_SYSTEM_DLKM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
-BOARD_AVB_VBMETA_SYSTEM_DLKM_ROLLBACK_INDEX_LOCATION := 5
-
-# WiFi
-WIFI_HIDL_UNIFIED_SUPPLICANT_SERVICE_RC_ENTRY := true
-WPA_SUPPLICANT_VERSION := VER_0_8_X
-BOARD_WPA_SUPPLICANT_DRIVER := NL80211
-BOARD_HOSTAPD_DRIVER := NL80211
-
 # Bluetooth
-BOARD_HAVE_BLUETOOTH := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/rise/alibaba/a210/bluetooth
 
 # SELinux
-BOARD_SEPOLICY_DIRS += hardware/generic/usb/aidl/sepolicy
 BOARD_SEPOLICY_DIRS += device/rise/alibaba/a210/sepolicy/vendor
-
-# VNDK
-BOARD_VNDK_VERSION := current
 
 # VINTF
 DEVICE_MANIFEST_FILE := device/rise/alibaba/a210/manifest.xml

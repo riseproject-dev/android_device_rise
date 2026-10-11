@@ -21,7 +21,7 @@ The device is `k3`; the lunch product lives in `k3_pico_itx/`:
 
 - `aosp_k3_pico_itx` — `lunch aosp_k3_pico_itx-trunk_staging-userdebug`
 
-`device/rise/spacemit/k3/device.mk` inherits `device/rise/spacemit/common` (SoC-agnostic
+`device/rise/spacemit/k3/device.mk` inherits `device/rise/common` (SoC-agnostic
 HALs, the Mesa GPU stack, A/B, codecs, webview, …) and adds the K3-specific
 fstab, init, firmware, and storage/WiFi/BT wiring.
 

@@ -5,7 +5,47 @@
 #
 
 # Inherit common configuration
-include device/rise/spacemit/common/BoardConfigCommon.mk
+include device/rise/common/BoardConfigCommon.mk
+
+# Architecture
+# TARGET_ARCH_VARIANT is set by the board configuration.
+TARGET_ARCH_VARIANT :=
+
+# Console + early UART kept on userdebug/eng for boot diagnostics (low perf
+# impact since they don't open PM gates or flood printk).
+ifneq ($(TARGET_BUILD_VARIANT),user)
+BOARD_KERNEL_CMDLINE += console=ttyS0,115200
+BOARD_KERNEL_CMDLINE += earlycon=uart8250,mmio32,0xd4017000
+BOARD_KERNEL_CMDLINE += earlyprintk
+# The X100 does not implement Zacas, so SLUB never sets __CMPXCHG_DOUBLE on its
+# caches and kmalloc_nolock() bails out unconditionally (mm/slub.c). That kills
+# every BPF local storage allocation, which makes netd abort and, with the
+# stock netd.rc, reboot-loop the board. Turning slab debugging on makes
+# kmem_cache_debug() true, which is the one case where kmalloc_nolock() is
+# allowed to fall through to its trylock path.
+#
+# Any SLAB_DEBUG_FLAGS bit is enough for that, so only enable consistency
+# checks (F), and only on the kmalloc-* caches kmalloc_nolock() allocates
+# from. Full slab_debug adds red-zoning, poisoning and a stack trace on every
+# alloc and free, and takes every cache off the SLUB fastpath. Drop this once
+# the kernel side is fixed.
+#
+# Still best-effort: the trylock can fail and return NULL under contention.
+BOARD_KERNEL_CMDLINE += slab_debug=F,kmalloc-*
+endif
+# BOARD_KERNEL_CMDLINE += androidboot.first_stage_console=1
+
+# Boot image
+BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOT_HEADER_VERSION) --pagesize $(BOARD_KERNEL_PAGESIZE) --kernel_offset 0x200000
+
+# Bootconfig
+BOARD_BOOTCONFIG += androidboot.load_modules_parallel=true
+BOARD_BOOTCONFIG += androidboot.logcat.buffersize=4M
+# GKI
+
+# Dynamic partitions
+BOARD_SUPER_PARTITION_GROUPS := spacemit_dynamic_partitions
+BOARD_SPACEMIT_DYNAMIC_PARTITIONS_PARTITION_LIST := system vendor vendor_dlkm system_dlkm
 
 # Platform
 TARGET_BOARD_PLATFORM := k3
@@ -13,28 +53,6 @@ TARGET_BOOTLOADER_BOARD_NAME := k3
 
 # The x100 Soong variant selects the X100 ISA and out-of-order tuning.
 TARGET_ARCH_VARIANT := x100
-
-# All 8 X100 harts are brought up. Idle is bare WFI with cpuidle off (exact
-# vendor parity: the vendor defconfig has no CPU_IDLE). A shallow WFI hart is
-# woken by its own S-mode sstc timer and by IMSIC IPIs; it must be kept OUT of
-# the PMU power-collapsed state (where only an M-mode MSIP/PMU event can wake
-# it) -- OpenSBI does that by de-voting the per-core PMU power-down in
-# cold_boot_allowed. No irqchip.riscv_imsic_noipi: the kernel uses the vendor's
-# direct S-mode IMSIC IPI path.
-#
-# DIAGNOSTIC (temporary): panic=5 confirmed the ~16s "silent hang" is actually a
-# kernel PANIC (the board reboots), but it printed nothing -- the real ttyS0
-# (8250, IRQ-driven) does not flush during panic. keep_bootcon keeps the polling
-# earlycon (uart8250) registered past 2.4s so console_flush_on_panic() can print
-# the oops/backtrace over it; ignore_loglevel prints everything. panic=5 dropped
-# so the panic HALTS with the backtrace frozen on screen (no reboot, no /data
-# corruption loop). Remove all once the panic is root-caused.
-# printk.devkmsg=on: the default /dev/kmsg ratelimit (10 writes / 5s per fd)
-# silently drops the KMDBG instrumentation lines from the keymint HAL exactly
-# around the vold keygen burst — proven by both "exit len=" lines being
-# truncated at the 10th write. Disable it so the hang diagnosis is complete.
-# Console verbosity: default loglevel (debug flags keep_bootcon/ignore_loglevel/
-# printk.devkmsg removed now that the freeze is root-caused).
 
 # Bring-up only: ttyS0 is IRQ-driven and does not flush during a panic, so an
 # oops prints nothing once the console has handed over. Keeping the polling
@@ -90,7 +108,6 @@ BOARD_BOOTCONFIG += androidboot.vendor.apex.com.android.hardware.gatekeeper=com.
 BOARD_BOOTCONFIG += androidboot.selinux=permissive
 
 # Partition sizes (match the bootloader's Android GPT layout)
-BOARD_SUPER_PARTITION_SIZE := 4831838208
 BOARD_SPACEMIT_DYNAMIC_PARTITIONS_SIZE := 2411724800
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 10662837248
 
@@ -110,15 +127,10 @@ BOARD_WLAN_DEVICE := realtek
 # and its VINTF manifest ship, but nothing declares the init service, so the
 # AIDL interface is advertised with no process behind it and the framework fails
 # with "Failed to get internal ISupplicantStaIfaceHal instance".
-WIFI_HIDL_UNIFIED_SUPPLICANT_SERVICE_RC_ENTRY := true
-WPA_SUPPLICANT_VERSION := VER_0_8_X
-BOARD_WPA_SUPPLICANT_DRIVER := NL80211
-BOARD_HOSTAPD_DRIVER := NL80211
 
 # Bluetooth — RTL8852B on USB (btusb + btrtl). btusb enumerates the controller
 # as a standard USB HCI. The AOSP default Bluetooth HAL drives it without a
 # vendor UART transport. bdroid_buildcfg.h carries the board name / class-of-dev.
-BOARD_HAVE_BLUETOOTH := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/rise/spacemit/k3/bluetooth
 
 # SELinux

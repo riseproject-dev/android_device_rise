@@ -1,3 +1,0 @@
-allow bootanim self:process execmem;
-gpu_access(bootanim)
-get_prop(bootanim, vendor_graphics_prop)
