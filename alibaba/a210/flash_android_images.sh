@@ -37,6 +37,19 @@ if [ -z "$FASTBOOT" ] || [ ! -x "$FASTBOOT" ]; then
     exit 1
 fi
 
+for image in bootzero-rvbl.bin spl-with-fit-rvbl.bin emmc-gpt_primary.img \
+    emmc_boot-loader.img emmc-uboot_env.img boot.img init_boot.img \
+    vendor_boot.img vbmeta.img vbmeta_vendor_dlkm.img vbmeta_system_dlkm.img \
+    super.img; do
+    if [ "$image" = bootzero-rvbl.bin ] && [ ! -e "$image" ]; then
+        continue
+    fi
+    if [ ! -f "$image" ] || [ ! -s "$image" ]; then
+        echo "Missing or empty image: $image" >&2
+        exit 1
+    fi
+done
+
 if [ -n "$serial" ]; then
     set -- -s "$serial"
 else
