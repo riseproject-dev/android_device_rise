@@ -103,13 +103,7 @@ BL="${IMG}"
 # selected by the RISE K3 U-Boot configuration.
 ANDROID_MEDIA="ufs"
 
-# Fastboot binary. The K1 flasher resolves it from PATH; the project's known-good
-# fastboot is /srv/data/android-sdk/platform-tools/fastboot — prefer it, then
-# fall back to PATH.
-FASTBOOT="/srv/data/android-sdk/platform-tools/fastboot"
-if [ ! -x "${FASTBOOT}" ]; then
-    FASTBOOT=$(command -v fastboot 2>/dev/null || true)
-fi
+FASTBOOT="${FASTBOOT:-$(command -v fastboot 2>/dev/null || true)}"
 
 # ============================================================================
 # Colors
