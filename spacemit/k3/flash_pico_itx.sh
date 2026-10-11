@@ -128,7 +128,7 @@ die()   { err "$*"; exit 1; }
 # ============================================================================
 require_fastboot() {
     if [ -z "${FASTBOOT}" ] || [ ! -x "${FASTBOOT}" ]; then
-        die "fastboot not found (looked at /srv/data/android-sdk/platform-tools/fastboot and PATH)"
+        die "fastboot not found (set FASTBOOT or add it to PATH)"
     fi
 }
 
