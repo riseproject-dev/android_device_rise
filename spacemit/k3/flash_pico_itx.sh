@@ -231,7 +231,7 @@ flash_bootloader_nor() {
     ${FASTBOOT} flash bootinfo "${BL}/factory/bootinfo_spinor.bin"
     ${FASTBOOT} flash fsbl "${BL}/factory/FSBL.bin"
     ${FASTBOOT} flash env "${BL}/env.bin"
-    ${FASTBOOT} flash opensbi "${BL}/fw_dynamic.itb"
+    # SPL loads OpenSBI from the combined U-Boot FIT at 0x210000.
     ${FASTBOOT} flash uboot "${BL}/u-boot.itb"
     ok "Bootloader flashed to SPI-NOR"
 }
@@ -346,7 +346,7 @@ mode_all() {
     local wipe="$1"
 
     require_fastboot
-    check_files factory/FSBL.bin factory/bootinfo_spinor.bin fw_dynamic.itb \
+    check_files factory/FSBL.bin factory/bootinfo_spinor.bin \
                 u-boot.itb env.bin partition_nor.json boot.img super.img vbmeta.img
 
     echo ""
@@ -378,7 +378,7 @@ mode_bootloader() {
     local wipe="$1"
 
     require_fastboot
-    check_files factory/FSBL.bin factory/bootinfo_spinor.bin fw_dynamic.itb \
+    check_files factory/FSBL.bin factory/bootinfo_spinor.bin \
                 u-boot.itb env.bin partition_nor.json
 
     echo ""
@@ -437,7 +437,7 @@ mode_dfu() {
     local wipe="$1"
 
     require_fastboot
-    check_files u-boot.itb fw_dynamic.itb env.bin factory/FSBL.bin \
+    check_files u-boot.itb env.bin factory/FSBL.bin \
                 factory/bootinfo_spinor.bin partition_nor.json \
                 boot.img super.img vbmeta.img
 
