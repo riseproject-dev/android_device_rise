@@ -8,58 +8,92 @@
 
 FAIL="###### Images flashing failed ######"
 
-if [ -n "$1" ]; then
-    device="-s $1"
+usage() {
+    echo "Usage: $0 [--wipe] [fastboot-serial]"
+    echo "Preserve userdata by default; --wipe erases it."
+}
+
+wipe=false
+serial=""
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --wipe) wipe=true ;;
+        --help|-h) usage; exit 0 ;;
+        -*) usage >&2; exit 2 ;;
+        *)
+            if [ -n "$serial" ]; then
+                usage >&2
+                exit 2
+            fi
+            serial="$1"
+            ;;
+    esac
+    shift
+done
+
+FASTBOOT="${FASTBOOT:-$(command -v fastboot 2>/dev/null || true)}"
+if [ -z "$FASTBOOT" ] || [ ! -x "$FASTBOOT" ]; then
+    echo "fastboot not found (set FASTBOOT or add it to PATH)" >&2
+    exit 1
 fi
 
-if fastboot ${device} getvar product 2>&1 | grep -q "product: a2"; then
+if [ -n "$serial" ]; then
+    set -- -s "$serial"
+else
+    set --
+fi
+
+if "$FASTBOOT" "$@" getvar product 2>&1 | grep -q "product: a2"; then
     echo "###### Start flash images ######"
 else
     echo "###### Start the flashing tool"
     if [ -e bootzero-rvbl.bin ]; then
-        fastboot ${device} flash ram bootzero-rvbl.bin || { echo $FAIL; exit 1; }
-        fastboot ${device} reboot
-        fastboot ${device} flash ram spl-with-fit-rvbl.bin || { echo $FAIL; exit 1; }
-        fastboot ${device} reboot
+        "$FASTBOOT" "$@" flash ram bootzero-rvbl.bin || { echo "$FAIL"; exit 1; }
+        "$FASTBOOT" "$@" reboot
+        "$FASTBOOT" "$@" flash ram spl-with-fit-rvbl.bin || { echo "$FAIL"; exit 1; }
+        "$FASTBOOT" "$@" reboot
     else
-        fastboot ${device} flash ram spl-with-fit-rvbl.bin || { echo $FAIL; exit 1; }
-        fastboot ${device} reboot
+        "$FASTBOOT" "$@" flash ram spl-with-fit-rvbl.bin || { echo "$FAIL"; exit 1; }
+        "$FASTBOOT" "$@" reboot
     fi
     echo "###### Wait for the flashing tool to be ready"
     sleep 5
 fi
 
 echo "###### Flash gpt"
-fastboot ${device} flash gpt emmc-gpt_primary.img || { echo $FAIL; exit 1; }
+"$FASTBOOT" "$@" flash gpt emmc-gpt_primary.img || { echo "$FAIL"; exit 1; }
 echo "###### Flash loader"
-fastboot ${device} flash mmc0boot0 emmc_boot-loader.img || { echo $FAIL; exit 1; }
+"$FASTBOOT" "$@" flash mmc0boot0 emmc_boot-loader.img || { echo "$FAIL"; exit 1; }
 echo "###### Flash partition uboot_env"
-fastboot ${device} flash uboot_env emmc-uboot_env.img || { echo $FAIL; exit 1; }
+"$FASTBOOT" "$@" flash uboot_env emmc-uboot_env.img || { echo "$FAIL"; exit 1; }
 
 echo "###### Flash boot (both slots)"
-fastboot ${device} flash boot_a boot.img || { echo $FAIL; exit 1; }
-fastboot ${device} flash boot_b boot.img || { echo $FAIL; exit 1; }
+"$FASTBOOT" "$@" flash boot_a boot.img || { echo "$FAIL"; exit 1; }
+"$FASTBOOT" "$@" flash boot_b boot.img || { echo "$FAIL"; exit 1; }
 echo "###### Flash init_boot (both slots)"
-fastboot ${device} flash init_boot_a init_boot.img || { echo $FAIL; exit 1; }
-fastboot ${device} flash init_boot_b init_boot.img || { echo $FAIL; exit 1; }
+"$FASTBOOT" "$@" flash init_boot_a init_boot.img || { echo "$FAIL"; exit 1; }
+"$FASTBOOT" "$@" flash init_boot_b init_boot.img || { echo "$FAIL"; exit 1; }
 echo "###### Flash vendor_boot (both slots)"
-fastboot ${device} flash vendor_boot_a vendor_boot.img || { echo $FAIL; exit 1; }
-fastboot ${device} flash vendor_boot_b vendor_boot.img || { echo $FAIL; exit 1; }
+"$FASTBOOT" "$@" flash vendor_boot_a vendor_boot.img || { echo "$FAIL"; exit 1; }
+"$FASTBOOT" "$@" flash vendor_boot_b vendor_boot.img || { echo "$FAIL"; exit 1; }
 echo "###### Flash vbmeta (both slots)"
-fastboot ${device} flash vbmeta_a vbmeta.img || { echo $FAIL; exit 1; }
-fastboot ${device} flash vbmeta_b vbmeta.img || { echo $FAIL; exit 1; }
+"$FASTBOOT" "$@" flash vbmeta_a vbmeta.img || { echo "$FAIL"; exit 1; }
+"$FASTBOOT" "$@" flash vbmeta_b vbmeta.img || { echo "$FAIL"; exit 1; }
 echo "###### Flash vbmeta_vendor_dlkm (both slots)"
-fastboot ${device} flash vbmeta_vendor_dlkm_a vbmeta_vendor_dlkm.img || { echo $FAIL; exit 1; }
-fastboot ${device} flash vbmeta_vendor_dlkm_b vbmeta_vendor_dlkm.img || { echo $FAIL; exit 1; }
+"$FASTBOOT" "$@" flash vbmeta_vendor_dlkm_a vbmeta_vendor_dlkm.img || { echo "$FAIL"; exit 1; }
+"$FASTBOOT" "$@" flash vbmeta_vendor_dlkm_b vbmeta_vendor_dlkm.img || { echo "$FAIL"; exit 1; }
 echo "###### Flash vbmeta_system_dlkm (both slots)"
-fastboot ${device} flash vbmeta_system_dlkm_a vbmeta_system_dlkm.img || { echo $FAIL; exit 1; }
-fastboot ${device} flash vbmeta_system_dlkm_b vbmeta_system_dlkm.img || { echo $FAIL; exit 1; }
+"$FASTBOOT" "$@" flash vbmeta_system_dlkm_a vbmeta_system_dlkm.img || { echo "$FAIL"; exit 1; }
+"$FASTBOOT" "$@" flash vbmeta_system_dlkm_b vbmeta_system_dlkm.img || { echo "$FAIL"; exit 1; }
 echo "###### Flash super"
-fastboot ${device} flash super super.img || { echo $FAIL; exit 1; }
+"$FASTBOOT" "$@" flash super super.img || { echo "$FAIL"; exit 1; }
 
-echo "###### Erase userdata, misc, select slot a"
-fastboot ${device} erase userdata || { echo $FAIL; exit 1; }
-fastboot ${device} erase misc || { echo $FAIL; exit 1; }
-fastboot ${device} set_active a
+if [ "$wipe" = true ]; then
+    echo "###### Erase userdata"
+    "$FASTBOOT" "$@" erase userdata || { echo "$FAIL"; exit 1; }
+fi
+echo "###### Erase misc, select slot a"
+"$FASTBOOT" "$@" erase misc || { echo "$FAIL"; exit 1; }
+"$FASTBOOT" "$@" set_active a
 
 echo "###### Images flashed success ######"
