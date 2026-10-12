@@ -1,0 +1,33 @@
+package {
+    default_applicable_licenses: ["device_spacemit_common_openttd_license"],
+}
+
+license {
+    name: "device_spacemit_common_openttd_license",
+    package_name: "OpenTTD",
+    visibility: [":__subpackages__"],
+    license_kinds: [
+        "SPDX-license-identifier-GPL-2.0-or-later",
+        "SPDX-license-identifier-CC-BY-SA",
+    ],
+    // The APK bundles the OpenGFX, OpenSFX and OpenMSX base sets.
+    license_text: [
+        "COPYING.md",
+        "LICENSE.opengfx",
+        "LICENSE.opensfx",
+        "LICENSE.openmsx",
+    ],
+}
+
+// OpenTTD has no Android release. This APK is built by os/android in the
+// riscv64 port of OpenTTD (build-deps.sh, build-openttd.sh, build-apk.sh).
+//
+// Like SuperTuxKart, it keeps its own signature (preprocessed), so a later
+// build installed with adb updates it instead of clashing with it.
+android_app_import {
+    name: "OpenTTD",
+    apk: "OpenTTD.apk",
+    product_specific: true,
+    presigned: true,
+    preprocessed: true,
+}
