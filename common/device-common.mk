@@ -61,6 +61,7 @@ PRODUCT_PACKAGES += \
     android.hardware.bluetooth-service.default
 
 PRODUCT_PROPERTY_OVERRIDES += \
+    ro.opengles.version=131072 \
     persist.demo.rotationlock=1 \
     ro.frp.pst=/dev/block/by-name/frp \
     ro.sf.lcd_density=240 \

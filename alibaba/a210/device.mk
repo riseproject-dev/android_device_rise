@@ -34,7 +34,6 @@ PRODUCT_PACKAGES += verisilicon_dri
 # Zink only offers OpenGL ES 2.0 on top of Mesa's PowerVR Vulkan
 # implementation, which lacks the VK_EXT_transform_feedback that ES 3.0
 # needs. Declaring more makes apps and CTS ask for contexts EGL cannot create.
-PRODUCT_PROPERTY_OVERRIDES += ro.opengles.version=131072
 
 # Vulkan features, as Mesa's PowerVR driver exposes them on the BXM-4-64 and as
 # CTS recomputes them from vkjson: API 1.2, hardware level 0 (no geometry or
