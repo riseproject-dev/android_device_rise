@@ -411,8 +411,8 @@
   },
   {
     "path": "kernel-build.json",
-    "size": 858,
-    "sha256": "78a4a6df7da085abff81ea7c560fb9a8c508216038768d574859dd96ca34bef1"
+    "size": 1110,
+    "sha256": "5e0de19ecd16fb45710e2bf60ffc0aa2a59203503346bb13c58f282dd8ac4bc3"
   },
   {
     "path": "kheaders.ko",

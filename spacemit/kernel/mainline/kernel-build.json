@@ -14,5 +14,9 @@
     "device.bazelrc": "46af347466f1a0b8ec5b042489bb1311a13497976d8f38a4b9b6ce205d32bb0e"
   },
   "built_before_device_commit": true,
-  "committed_configuration_matches_build_inputs": true
+  "committed_configuration_matches_build_inputs": true,
+  "delivery_source_commit": "27b1e5c3f68a46a649dda14f51608f5206e19f6b",
+  "delivery_source_branch": "android-mainline-spacemit",
+  "delivery_source_tree": "4bbf7987a7a4f8e9e6bac640be33ae1bbaacd4ac",
+  "build_and_delivery_source_trees_identical": true
 }
