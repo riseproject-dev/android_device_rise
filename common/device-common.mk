@@ -55,9 +55,10 @@ PRODUCT_PACKAGES += \
     hwservicemanager \
     android.hidl.allocator@1.0-service \
     webview_riscv64 \
-    OpenTTD \
-    Mindustry \
+    SuperTuxKart \
     Luanti \
+    Mindustry \
+    OpenTTD \
     modetest \
     wpa_supplicant \
     wpa_cli \
