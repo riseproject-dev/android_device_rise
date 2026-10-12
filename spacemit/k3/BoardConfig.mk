@@ -37,6 +37,7 @@ endif
 
 # Boot image
 BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOT_HEADER_VERSION) --pagesize $(BOARD_KERNEL_PAGESIZE) --kernel_offset 0x200000
+BOARD_MKBOOTIMG_INIT_ARGS := --header_version $(BOARD_INIT_BOOT_HEADER_VERSION)
 
 # Bootconfig
 BOARD_BOOTCONFIG += androidboot.load_modules_parallel=true
