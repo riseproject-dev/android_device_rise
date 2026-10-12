@@ -15,3 +15,4 @@ vendor.gralloc.                u:object_r:vendor_graphics_prop:s0
 vendor.mesa.                   u:object_r:vendor_graphics_prop:s0
 vendor.hwc.drm.device                  u:object_r:vendor_graphics_prop:s0 exact string
 vendor.hwc.drm.internal_display_names  u:object_r:vendor_graphics_prop:s0 exact string
+ro.vendor.hwc.drm.preferred_mode       u:object_r:vendor_graphics_prop:s0 exact string

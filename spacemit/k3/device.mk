@@ -43,6 +43,8 @@ TARGET_KERNEL_USE ?= mainline
 LOCAL_KERNEL := device/rise/spacemit/kernel/$(TARGET_KERNEL_USE)/Image
 PRODUCT_COPY_FILES += $(LOCAL_KERNEL):kernel
 
+PRODUCT_VENDOR_PROPERTIES += ro.vendor.hwc.drm.preferred_mode=1920x1080
+
 # Properties
 # sys.usb.configfs=1: use the modern configfs USB gadget (/config/usb_gadget)
 # instead of the legacy android_usb driver, which does not exist in the mainline
