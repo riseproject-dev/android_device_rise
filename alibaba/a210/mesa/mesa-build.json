@@ -1,0 +1,72 @@
+{
+  "mesa_source_checkout": "/srv/rise/ready_to_push/mesa",
+  "rise_source_commit": "d664958483b24d98ebb54feadaf25be2d3e9c0a3",
+  "selected_original_commit": "f0cabdd9b5683daee75ad9a253fd71154f739278",
+  "mesa_code_matches_selected_original_commit": true,
+  "differences": "RISE build script and cross-file adjustments only",
+  "android_source_tree": "/srv/rise/ready_to_push/aosp",
+  "native_builds": true,
+  "reuse_peer_binary_payload_for_final_delivery": false,
+  "board": "a210",
+  "android_output_used": "/srv/rise/ready_to_push/aosp/out-a210",
+  "mesa_source_repository": "git@github.com:riseproject-dev/mesa.git",
+  "source_branch": "android-17-imagination",
+  "selected_source_branch": "android-17-pvr-perf",
+  "build_exit_code": 0,
+  "native_tools_built_from_rise_source": true,
+  "log": "/srv/rise/ready_to_push/sources/claude-fixes-integration-20261011T214748.476563Z/a210-rise-mesa-build.log",
+  "files": [
+    {
+      "path": "dri/powervr_dri.so",
+      "bytes": 19507560,
+      "sha256": "b309716924e7edcc31616f5e3fecbd8d137cca85f96ae30e148621b66ac855e8"
+    },
+    {
+      "path": "dri/verisilicon_dri.so",
+      "bytes": 19507560,
+      "sha256": "b309716924e7edcc31616f5e3fecbd8d137cca85f96ae30e148621b66ac855e8"
+    },
+    {
+      "path": "dri/zink_dri.so",
+      "bytes": 19507560,
+      "sha256": "b309716924e7edcc31616f5e3fecbd8d137cca85f96ae30e148621b66ac855e8"
+    },
+    {
+      "path": "egl/libGLES_mesa.so",
+      "bytes": 339240,
+      "sha256": "7d9759f0f5883be6f0b33c472c18bd3a22b5f5e93bcbd1babd94954f82895938"
+    },
+    {
+      "path": "egl/libGLESv1_CM.so",
+      "bytes": 33256,
+      "sha256": "5ce6555e8f5624c31a144cdd78c860c3a0f0aac0597f03b3ff7b6ca34fda6e31"
+    },
+    {
+      "path": "egl/libGLESv2.so",
+      "bytes": 74536,
+      "sha256": "0c00560702651c38bd0c1165615d162f521a97a6090094f15f3609670d9cfb2e"
+    },
+    {
+      "path": "egl/libgallium_dri.so",
+      "bytes": 19507560,
+      "sha256": "b309716924e7edcc31616f5e3fecbd8d137cca85f96ae30e148621b66ac855e8"
+    },
+    {
+      "path": "gbm/dri_gbm.so",
+      "bytes": 109928,
+      "sha256": "18da7153d64695cebf6b275ef803bff933848c85491096d3db172d7850c8fc5c"
+    },
+    {
+      "path": "hw/vulkan.mesa.so",
+      "bytes": 12096576,
+      "sha256": "60ea9a9c478322bdc7d8e6409cf085169e426a6c2ba5258b6d7cc780bba96884"
+    },
+    {
+      "path": "libgbm_mesa.so",
+      "bytes": 27424,
+      "sha256": "d03a606c661edccc1be024cf874da4248e01b3ad9a34cbb3f844405ad7dc35e0"
+    }
+  ],
+  "libgbm_soname": "libgbm_mesa.so",
+  "runtime_validation": "pending on A210"
+}
