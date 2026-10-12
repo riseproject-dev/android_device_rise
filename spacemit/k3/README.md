@@ -76,7 +76,10 @@ prebuilts. The `post-sync.py` hook applies the zlib fix from
   headset routing and microphone capture still require testing on the board.
 - One PowerVR reset occurred before the automatic tests; the system
   recovered. The GPU interruption issue remains open.
-- Reboot, USB storage, camera and A/B success flags were not tested.
+- Reboot completed successfully, but the DP connector reported no monitor
+  after that reboot and Android used its fallback display mode. Monitor
+  power/standby and boot-time hot-plug detection require a physical check.
+- USB storage, camera and A/B success flags were not tested.
 
 ## Storage (UFS, not eMMC)
 
