@@ -1,4 +1,4 @@
-"""repo post-sync hook: apply the zlib fix and materialise Git LFS payloads.
+"""repo post-sync hook: materialise Git LFS payloads.
 
 repo knows nothing about Git LFS.  On a fresh checkout the tracked files
 are left as their pointer text -- a few dozen bytes naming an object --
@@ -19,26 +19,6 @@ import subprocess
 LFS_PROJECTS = ("device/rise",)
 
 
-def _patch_zlib(topdir):
-    worktree = os.path.join(topdir, "external/zlib")
-    patch = os.path.join(topdir, "device/rise/common/patches/zlib-rvv-tail.patch")
-    reverse = subprocess.run(
-        ("git", "-C", worktree, "apply", "--reverse", "--check", patch),
-        capture_output=True,
-        text=True,
-    )
-    if reverse.returncode == 0:
-        return
-    for options in (("--check",), ()):
-        result = subprocess.run(
-            ("git", "-C", worktree, "apply") + options + (patch,),
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode:
-            raise RuntimeError("post-sync: zlib RVV fix failed: " + result.stderr.strip())
-
-
 def _pull(worktree):
     """Fetch the LFS objects of one worktree, returning an error or None."""
     # --local keeps the filter config inside this worktree: the hook stays
@@ -56,8 +36,6 @@ def _pull(worktree):
 
 def main(repo_topdir=None, **kwargs):
     topdir = repo_topdir or os.getcwd()
-    _patch_zlib(topdir)
-
     worktrees = [
         os.path.join(topdir, path)
         for path in LFS_PROJECTS
