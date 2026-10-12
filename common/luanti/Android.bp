@@ -1,0 +1,30 @@
+package {
+    default_applicable_licenses: ["device_spacemit_common_luanti_license"],
+}
+
+license {
+    name: "device_spacemit_common_luanti_license",
+    package_name: "Luanti",
+    visibility: [":__subpackages__"],
+    license_kinds: [
+        "SPDX-license-identifier-LGPL-2.1-or-later",
+        "SPDX-license-identifier-CC-BY-SA",
+        "SPDX-license-identifier-Apache-2.0",
+    ],
+    license_text: ["LICENSE.txt"],
+}
+
+// Luanti ships no riscv64 release. This APK is built from the riscv64 port of
+// Luanti and luanti_android_deps (./gradlew -Pabis=riscv64 assembleRelease),
+// which uses the bundled Lua instead of LuaJIT and stores the JNI libraries
+// uncompressed.
+//
+// Like SuperTuxKart, it keeps its own signature (preprocessed), so a later
+// build installed with adb updates it instead of clashing with it.
+android_app_import {
+    name: "Luanti",
+    apk: "Luanti.apk",
+    product_specific: true,
+    presigned: true,
+    preprocessed: true,
+}
