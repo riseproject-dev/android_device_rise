@@ -16,6 +16,8 @@ TARGET_ARCH_VARIANT := a210
 TARGET_BOARD_PLATFORM := a210
 TARGET_BOOTLOADER_BOARD_NAME := a210
 
+$(call soong_config_set,minigbm,mesa_module,//device/rise/alibaba/a210/mesa:libgbm_mesa)
+
 # Kernel
 KERNEL_MODULES_PATH := device/rise/alibaba/kernel/mainline
 TARGET_PREBUILT_KERNEL := $(KERNEL_MODULES_PATH)/Image

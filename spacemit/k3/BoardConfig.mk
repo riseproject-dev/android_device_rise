@@ -52,6 +52,8 @@ BOARD_SPACEMIT_DYNAMIC_PARTITIONS_PARTITION_LIST := system vendor vendor_dlkm sy
 TARGET_BOARD_PLATFORM := k3
 TARGET_BOOTLOADER_BOARD_NAME := k3
 
+$(call soong_config_set,minigbm,mesa_module,//device/rise/spacemit/k3/mesa:libgbm_mesa)
+
 # The x100 Soong variant selects the X100 ISA and out-of-order tuning.
 TARGET_ARCH_VARIANT := x100
 
