@@ -1,0 +1,31 @@
+From e821ecd1646d379a35502604ba75ae439a815857 Mon Sep 17 00:00:00 2001
+From: Guillaume La Roque <glaroque@baylibre.com>
+Date: Mon, 12 Oct 2026 02:09:47 +0200
+Subject: [PATCH] zlib: limit the RVV tail load to the remaining bytes
+
+The final short block can end at an unmapped page boundary. Loading
+a full vector reads past the input and crashes task snapshot
+compression. Load only the remaining bytes before shifting them
+into the zero-filled vector.
+
+Signed-off-by: Guillaume La Roque <glaroque@baylibre.com>
+---
+ adler32_simd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/adler32_simd.c b/adler32_simd.c
+index 08c21d3e953a..d66a2c78dbc5 100644
+--- a/adler32_simd.c
++++ b/adler32_simd.c
+@@ -391,7 +391,7 @@ uint32_t ZLIB_INTERNAL adler32_simd_(  /* RVV */
+   size_t head = len & (vl - 1);
+   if (head > 0) {
+     vuint8m2_t zero8 = __riscv_vmv_v_x_u8m2(0, vl);
+-    vuint8m2_t in = __riscv_vle8_v_u8m2(buf, vl);
++    vuint8m2_t in = __riscv_vle8_v_u8m2(buf, head);
+     in = __riscv_vslideup(zero8, in, vl - head, vl);
+     vuint16m4_t in16 = __riscv_vwcvtu_x(in, vl);
+     a_sum = in16;
+-- 
+2.34.1
+
