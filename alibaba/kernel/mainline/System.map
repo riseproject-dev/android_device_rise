@@ -65576,7 +65576,7 @@ ffffffff8160ce05 d profile_setup.kvmstr
 ffffffff8160ce2f d __param_str_irqtime
 ffffffff8160ce37 d str__timer_migration__trace_system_name
 ffffffff8160d014 D kernel_config_data
-ffffffff816186a1 D kernel_config_data_end
+ffffffff816186a6 D kernel_config_data_end
 ffffffff816199d8 d hung_task_timeout_max
 ffffffff816199e0 d sixty
 ffffffff81619dd8 d get_compat_mode1_syscalls.mode1_syscalls_32

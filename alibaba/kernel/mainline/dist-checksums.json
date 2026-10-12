@@ -2,17 +2,17 @@
   {
     "path": "Image",
     "size": 33571328,
-    "sha256": "147ff929909441652a2ca47e51e1addda5809493be144a2b82735903df747d89"
+    "sha256": "0df617846a86cef3dfa373f82ef6dfb6ff7baca5d1b4489fcbce1236996182d9"
   },
   {
     "path": "Image.gz",
-    "size": 12641872,
-    "sha256": "914a7074f115921b8fc04656d6c8257806a36bdf3b709db82f64f2a2a69fe514"
+    "size": 12641887,
+    "sha256": "e7886db2c3338b6de1795c071b6c2d58cc2c1a8dc0d82b9248716096ef8b7276"
   },
   {
     "path": "System.map",
     "size": 5887766,
-    "sha256": "33f89a1f4496d5a0aa4024fbcce045fee37a51978d07e03a655a459890f86250"
+    "sha256": "57a2a66742051fe172ccb8c28f6bf11b72129c0a14ca46f6b130562922628be0"
   },
   {
     "path": "a210-evb.dtb",
@@ -33,11 +33,6 @@
     "path": "initramfs/vendor_boot.modules.load",
     "size": 340,
     "sha256": "85626bab39375a91c84af3acbeda39487ba8380506721b2787013b7bbe5ce42e"
-  },
-  {
-    "path": "kernel-build.json",
-    "size": 848,
-    "sha256": "42c682ac8affd5dcc253ad627824f0307f87882b21ebabf8cb9932e4e98ad06b"
   },
   {
     "path": "modules.builtin",
@@ -150,6 +145,11 @@
     "sha256": "94927e64adbaa7def75d11ab5aebf855b031500fcb3b271c8481bba050f25049"
   },
   {
+    "path": "system_dlkm/btrtl.ko",
+    "size": 778865,
+    "sha256": "cc5f6cf15955c750f7c41269425817366a070199fb6628bbf7b0e872057e22dc"
+  },
+  {
     "path": "system_dlkm/btsdio.ko",
     "size": 722297,
     "sha256": "3c930b281c3546fbef8ae4d076ae1ef6beff1d2c5701751c819c66aeb7e2200a"
@@ -221,8 +221,8 @@
   },
   {
     "path": "system_dlkm/hci_uart.ko",
-    "size": 3504441,
-    "sha256": "12c495cc7d260a6154b13f5c8ad6885b35ec5391236dce65c1ba6393d79f7871"
+    "size": 4056593,
+    "sha256": "ad82a70b01f0ee3f4c59f5d61b5a612b9a08f6cae971792ae81978b003fde34d"
   },
   {
     "path": "system_dlkm/hidp.ko",
@@ -606,8 +606,8 @@
   },
   {
     "path": "vendor_dlkm/vendor_dlkm.flatten.img",
-    "size": 226095104,
-    "sha256": "9ce8bb8bf7c010ada13d9517b57a7de6e9ab8fe7975648ba57ca390d4234894f"
+    "size": 227381248,
+    "sha256": "42d54008fc82fca8451496ac81eea3f78aa7ae880d40d5513bec3c157176cfc7"
   },
   {
     "path": "vendor_dlkm/vendor_dlkm.flatten.modules.load",
@@ -616,8 +616,8 @@
   },
   {
     "path": "vendor_dlkm/vendor_dlkm.img",
-    "size": 227274752,
-    "sha256": "24651877dfd5eaf3ace3d96d9319216464fa91daec4160e4991d07c5022ac4c1"
+    "size": 228564992,
+    "sha256": "b8576263130da3cf4cf618091455dc0f5ca4b4e601beb6c2b9ae1d60ce6e11b1"
   },
   {
     "path": "vendor_dlkm/vendor_dlkm.modules.blocklist",
@@ -637,7 +637,7 @@
   {
     "path": "vmlinux",
     "size": 538309184,
-    "sha256": "4a13caa4412019c085ede607b1a6a4f2e207a232c6c3fc6b942b8605623622e8"
+    "sha256": "504640084625399537626d10984ec13f9cca9603223eba75b6b3366301ad00d0"
   },
   {
     "path": "vmlinux.symvers",
