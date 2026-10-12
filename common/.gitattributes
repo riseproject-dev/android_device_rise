@@ -1,3 +1,4 @@
 webview/*.apk filter=lfs diff=lfs merge=lfs -text
 supertuxkart/*.apk filter=lfs diff=lfs merge=lfs -text
 luanti/*.apk filter=lfs diff=lfs merge=lfs -text
+mindustry/*.apk filter=lfs diff=lfs merge=lfs -text

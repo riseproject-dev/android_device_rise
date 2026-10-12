@@ -55,6 +55,7 @@ PRODUCT_PACKAGES += \
     hwservicemanager \
     android.hidl.allocator@1.0-service \
     webview_riscv64 \
+    Mindustry \
     Luanti \
     modetest \
     wpa_supplicant \

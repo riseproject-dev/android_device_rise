@@ -1,0 +1,25 @@
+package {
+    default_applicable_licenses: ["device_spacemit_common_mindustry_license"],
+}
+
+license {
+    name: "device_spacemit_common_mindustry_license",
+    package_name: "Mindustry",
+    visibility: [":__subpackages__"],
+    license_kinds: ["SPDX-license-identifier-GPL-3.0-or-later"],
+    license_text: ["LICENSE"],
+}
+
+// Mindustry ships no riscv64 release. This APK is built from the riscv64 port
+// of Mindustry and its Arc framework (android:assembleRelease
+// -PandroidAbis=riscv64), which stores the JNI libraries uncompressed.
+//
+// Like SuperTuxKart, it keeps its own signature (preprocessed), so a later
+// build installed with adb updates it instead of clashing with it.
+android_app_import {
+    name: "Mindustry",
+    apk: "Mindustry.apk",
+    product_specific: true,
+    presigned: true,
+    preprocessed: true,
+}
