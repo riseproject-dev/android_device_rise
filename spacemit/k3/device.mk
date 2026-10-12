@@ -62,13 +62,11 @@ PRODUCT_PROPERTY_OVERRIDES += ro.hardware.gralloc=minigbm
 # entries.
 PRODUCT_COPY_FILES += device/rise/spacemit/k3/preloaded-classes:system/etc/preloaded-classes
 
-# On-board speaker audio: the ES8326 codec on the secure TWSI3 bus, which ALSA
-# enumerates as card "sndes8326". Select it by name -- card numbering is not
-# stable, a USB webcam readily takes index 0 -- and keep the index only as a
-# fallback for when the name lookup fails.
+# Select DisplayPort playback by card name because USB devices can change
+# ALSA card numbering. Capture stays on the ES8326 through the policy ports.
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.vendor.audio.primary.card_name=sndes8326 \
-    ro.vendor.audio.primary.card=1 \
+    ro.vendor.audio.primary.card_name=K3DP1Audio \
+    ro.vendor.audio.primary.card=2 \
     ro.vendor.audio.primary.device=0 \
     ro.vendor.audio.mixer.config=/vendor/etc/mixer_controls_k3.xml
 
@@ -79,7 +77,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # dropped.
 PRODUCT_COPY_FILES += $(LOCAL_PATH)/audio/mixer_controls.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_controls_k3.xml
 
-DEVICE_PACKAGE_OVERLAYS += device/rise/spacemit/k3/overlay
 
 # Audio policy config. The primary module must exist at all costs: without it
 # the audio HAL exposes no IModule/default, AudioFlinger dies in a loop
