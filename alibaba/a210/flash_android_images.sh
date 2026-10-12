@@ -105,8 +105,7 @@ if [ "$wipe" = true ]; then
     echo "###### Erase userdata"
     "$FASTBOOT" "$@" erase userdata || { echo "$FAIL"; exit 1; }
 fi
-echo "###### Erase misc, select slot a"
+echo "###### Erase misc, reset A/B metadata"
 "$FASTBOOT" "$@" erase misc || { echo "$FAIL"; exit 1; }
-"$FASTBOOT" "$@" set_active a || { echo "$FAIL"; exit 1; }
 
 echo "###### Images flashed success ######"
