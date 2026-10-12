@@ -7,4 +7,5 @@
          Settings, the navbar RRO it enables overrides this value, and that
          choice lives in /data so it survives reboots but not a clean flash. -->
     <integer name="config_navBarInteractionMode">2</integer>
+    <bool name="config_showNavigationBar">true</bool>
 </resources>
