@@ -55,8 +55,9 @@ workspace. The complete Android image set passed the requested board tests
 after a full DFU flash on 2026-10-12: boot, DisplayPort video and audio,
 WebView, all four games, 25 app-switch cycles, Wi-Fi, Bluetooth and ADB.
 The image includes the RVV zlib fix, the minigbm fixes and native RISE Mesa
-prebuilts. The `post-sync.py` hook applies the zlib fix from
-`device/rise/common/patches/zlib-rvv-tail.patch` to the upstream AOSP source.
+prebuilts. The manifest selects the committed RVV fix from the RISE
+`android_external_zlib` fork. The `post-sync.py` hook materializes the
+Git LFS APK and kernel payloads.
 
 | Function | Kernel | Firmware | Notes |
 |---|---|---|---|
