@@ -105,14 +105,43 @@ also identify the corresponding RISE repositories, branches and revisions.
 
 ## Flashing
 
-Use `flash_pico_itx.sh` (staged to `PRODUCT_OUT`). The board enters flashing
-mode via the **FDL** button; flashing is over the **DRD Type-C** port with the
-official `Titan` tool or `fastboot`. Bootloader → SPI-NOR, Android → UFS.
+Use `flash_pico_itx.sh` from the K3 product output or extracted image package.
+Connect power first through the full-featured Type-C port or ATX connector.
+With the board powered, follow the manufacturer's section 3.1.2:
+
+1. Press and hold the FDL flashing button.
+2. Briefly press the RST reset button.
+3. Release the FDL flashing button.
+4. Use the flashing Type-C data cable to connect the DRD Type-C port to the
+   host computer.
+
+Attach UART at 115200 baud.
+See the [manufacturer's hardware guide](https://cdn-resource.spacemit.com/file/product/K3/k3_pico_ug_en.pdf)
+for connector and button positions. Host tools include `fastboot` and
+`lsusb` (`usbutils`). Connect only this fastboot board.
+
+Check BROM and install the complete SPI-NOR boot chain, UFS GPT and Android
+images with fresh data:
 
 ```sh
-./flash_pico_itx.sh --android-media=ufs      # Android to UFS (default for this board)
-./flash_pico_itx.sh --help                   # all modes
+lsusb -d 361c:1001 && fastboot devices && bash flash_pico_itx.sh --dfu --wipe
 ```
+
+For an Android update on an existing layout, interrupt U-Boot autoboot on
+UART and run `fastboot usb 0` at the board prompt. On the host, from the
+image directory:
+
+```sh
+fastboot devices && bash flash_pico_itx.sh --android
+```
+
+Default mode updates SPI-NOR and Android on the existing GPT; `--bootloader`
+updates SPI-NOR only. GPT creation is part of the `--dfu` flow. Without
+`--wipe`, Android modes preserve data on a compatible partition layout.
+With `--wipe`, the helper writes `userdata.img` and attempts to format
+`metadata` and `persist`. It requests a reboot; power-cycle if that fails.
+The default Android backend is UFS; the optional syntax is
+`--android-media ufs`.
 
 The full DFU, SPI-NOR, UFS GPT and Android A/B flash flow was exercised
 successfully for the 2026-10-12 board test lot.
