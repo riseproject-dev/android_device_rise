@@ -74,6 +74,13 @@ PRODUCT_COPY_FILES += device/rise/alibaba/a210/wifi/wpa_supplicant.conf:$(TARGET
 # Bluetooth
 PRODUCT_PACKAGES += rtl8822cs_bt_firmware
 
+# External USB (UVC) camera
+PRODUCT_PACKAGES += android.hardware.camera.provider-V1-external-service
+
+PRODUCT_COPY_FILES += \
+    device/rise/alibaba/a210/external_camera_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/external_camera_config.xml \
+    frameworks/native/data/etc/android.hardware.camera.external.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.camera.external.xml
+
 # Bluetooth profiles
 PRODUCT_PRODUCT_PROPERTIES += \
     bluetooth.profile.gatt.enabled?=true \

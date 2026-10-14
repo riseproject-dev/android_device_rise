@@ -4,3 +4,8 @@ modalias_handling enabled
 
 # Storage: for factory reset protection feature
 /dev/block/by-name/frp   0660   system     system
+
+# Camera
+/dev/video*               0660   media     camera
+/dev/media*               0660   media     camera
+/dev/v4l-subdev*          0660   media     camera
