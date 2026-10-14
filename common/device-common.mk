@@ -23,7 +23,7 @@ PRODUCT_PACKAGES += \
     update_engine_client \
     update_verifier \
     checkpoint_gc \
-    android.hardware.boot-service.default \
+    com.android.hardware.boot \
     android.hardware.boot-service.default_recovery \
     fastbootd \
     android.hardware.fastboot-service.example \
