@@ -1,22 +1,20 @@
 {
   "board": "a210",
   "source_repository": "git@github.com:riseproject-dev/android_kernel_common.git",
-  "source_commit": "23492d5d4537d19edd309eb3de881db0106e5ce6",
+  "source_commit": "becaffaef85344de162cb68e73f656619f3966fa",
   "source_clean": true,
   "device_repository": "git@github.com:riseproject-dev/android_kernel_device.git",
-  "device_commit": "3824f876f510074518fd4e4ca6c1cc6f69ad5d56",
+  "device_commit": "1418402f5d2b54531d96fd7b348fcc99369179e8",
   "target": "//devices/rise/alibaba/a210:zhihe_a210_dist",
   "bazel_config": "fast",
   "device_bazelrc": "zhihe_a210",
   "config_sha256": {
-    "BUILD.bazel": "362c31d65a8b4d7a380d8300c51d3369acf118d20b818efb5f1b3ed7e048c898",
-    "zhihe_a210.fragment": "e55d1e949b139d8be40fcc9556859de02c712ee44f9841e77f334dc0a2ce2e0d",
+    "BUILD.bazel": "f1252117432d3fea5786791b59934472e5acd9afca756b795efbcf968a3381a4",
+    "zhihe_a210.fragment": "4d033f683653b5e48cba766188b65502cf0bbbeccfb1ab8e4b75bf25b5b0bb97",
     "device.bazelrc": "2316c87544b365d60e2dbeac49fedb7f8cdc54d0dec8aece41b914de5e84d576"
   },
   "built_before_device_commit": false,
   "committed_configuration_matches_build_inputs": true,
-  "native_build_result": "/srv/rise/ready_to_push/sources/a210-bluetooth-fix-20261012T113554.723761Z/kernel-result.json",
-  "bluetooth_verification": "/srv/rise/ready_to_push/sources/a210-bluetooth-fix-20261012T113554.723761Z/kernel-verification.json",
-  "effective_config_sha256": "076f1423a5d55a9687611fd6a9007767a97760dc9e4495dacbd532adddb7e8eb",
-  "hardware_validation": "pending Guillaume"
+  "effective_config_sha256": "df1662f34f5020de818042c4671067a2b42f5f4eac0c42855e2e5cdcf20ea09b",
+  "hardware_validation": "A210 EVB 2026-10-14: boot, boot control and ALSA card probe (jack + HDMI PCM) checked; HDMI playback pending"
 }

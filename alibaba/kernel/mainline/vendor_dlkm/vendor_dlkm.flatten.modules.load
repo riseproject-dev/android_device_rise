@@ -1,8 +1,10 @@
 phy-zhihe-snps-usb2.ko
 phy-zhihe-snps-c10phy.ko
 gpio-pca953x.ko
+dw-axi-dmac-platform.ko
 drm_display_helper.ko
 dw-hdmi.ko
+dw-hdmi-i2s-audio.ko
 display-connector.ko
 th1520-dw-hdmi.ko
 drm_exec.ko
@@ -19,3 +21,10 @@ dwc2.ko
 i2c-designware-core.ko
 i2c-designware-platform.ko
 pwrseq_simple.ko
+snd-soc-es7210.ko
+snd-soc-es8156.ko
+snd-soc-hdmi-codec.ko
+snd-soc-simple-card-utils.ko
+snd-soc-audio-graph-card2.ko
+snd-soc-zhihe-pcm.ko
+snd-soc-zhihe-i2s.ko
