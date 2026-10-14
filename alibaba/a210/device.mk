@@ -10,9 +10,10 @@ $(call inherit-product, device/rise/common/device-common.mk)
 LOCAL_KERNEL := device/rise/alibaba/kernel/mainline/Image
 PRODUCT_COPY_FILES += $(LOCAL_KERNEL):kernel
 
+# ALSA PCM device of the primary output: 0 = headset jack, 1 = HDMI.
 PRODUCT_VENDOR_PROPERTIES += \
     ro.vendor.audio.primary.card_name=A210EVBAudio \
-    ro.vendor.audio.primary.device=0 \
+    ro.vendor.audio.primary.device=1 \
     ro.vendor.audio.mixer.config=/vendor/etc/mixer_controls_a210.xml
 
 # Installed under a board specific name and selected through
