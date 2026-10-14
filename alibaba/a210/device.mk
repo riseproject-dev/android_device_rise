@@ -10,9 +10,30 @@ $(call inherit-product, device/rise/common/device-common.mk)
 LOCAL_KERNEL := device/rise/alibaba/kernel/mainline/Image
 PRODUCT_COPY_FILES += $(LOCAL_KERNEL):kernel
 
+PRODUCT_VENDOR_PROPERTIES += \
+    ro.vendor.audio.primary.card_name=A210EVBAudio \
+    ro.vendor.audio.primary.device=0 \
+    ro.vendor.audio.mixer.config=/vendor/etc/mixer_controls_a210.xml
+
+# Installed under a board specific name and selected through
+# ro.vendor.audio.mixer.config: device-common.mk already copies the generic
+# file to etc/mixer_controls.xml, and PRODUCT_COPY_FILES keeps the first entry
+# for a destination.
 PRODUCT_COPY_FILES += \
+    device/rise/alibaba/a210/audio/mixer_controls.xml:$(TARGET_COPY_OUT_VENDOR)/etc/mixer_controls_a210.xml \
     device/rise/alibaba/a210/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio_policy_configuration.xml \
     device/rise/alibaba/a210/audio/primary_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/primary_audio_policy_configuration.xml
+
+PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.audio.output.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.output.xml \
+    frameworks/native/data/etc/android.hardware.audio.low_latency.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.audio.low_latency.xml
+
+# ALSA debug tools
+PRODUCT_PACKAGES_DEBUG += \
+    tinyplay \
+    tinycap \
+    tinymix \
+    tinypcminfo
 
 PRODUCT_VENDOR_PROPERTIES += ro.hardware.gralloc=minigbm
 
