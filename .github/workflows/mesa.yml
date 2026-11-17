@@ -1,0 +1,178 @@
+name: mesa
+
+on:
+  # Sent by the Mesa repository when it is pushed.
+  repository_dispatch:
+    types: [mesa-update]
+  schedule:
+    - cron: '47 */3 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Rebuild even if the Mesa sources did not change
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mesa
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: ${{ matrix.board }}
+    runs-on: aosp-builder
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - board: k3
+            lunch: aosp_k3_pico_itx-trunk_staging-userdebug
+            path: spacemit/k3/mesa
+          - board: a210
+            lunch: aosp_a210_evb-trunk_staging-userdebug
+            path: alibaba/a210/mesa
+    env:
+      BRANCH: android-17
+      MANIFEST_URL: https://github.com/riseproject-dev/android_manifest
+      MESA_BRANCH: android-17-imagination
+    steps:
+      - name: Wait for related source pushes
+        if: github.event_name == 'repository_dispatch' && strategy.job-index == 0
+        run: sleep 180
+
+      - name: Check out the CI scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          ref: ${{ env.BRANCH }}
+          path: ci
+          sparse-checkout: .github
+
+      # The builder has a single runner, so no other job uses these. The
+      # cleanup steps of a job do not run when the runner itself stops.
+      - name: Remove the leftovers of interrupted jobs
+        run: |
+          bash ci/.github/scripts/googlesource-auth.sh --remove
+          rm -rf "${RISE_WORKSPACE:-$HOME/rise}"/work/* "${RISE_WORKSPACE:-$HOME/rise}"/aosp/out*
+
+      # The Android build host packages, then the Mesa ones.
+      - name: Install the build tools
+        run: >-
+          bash ci/.github/scripts/install-builder-tools.sh gh git-lfs
+          gnupg flex bison build-essential zip unzip zlib1g-dev libc6-dev-i386
+          x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils
+          xsltproc fontconfig rsync
+          meson ninja-build cmake pkgconf patchelf python3-mako python3-yaml
+          python3-packaging llvm-20-dev clang-20 libclang-20-dev libclang-cpp20-dev
+          libllvmspirvlib-20-dev libclc-20-dev libzstd-dev libexpat1-dev libdrm-dev
+
+      - name: Check Mesa sources
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ inputs.force || false }}
+        run: >-
+          python3 ci/.github/scripts/sources.py check
+          --source "mesa@$MESA_BRANCH"
+          --path ${{ matrix.path }} --marker riseproject-dev/mesa
+
+      - name: Authenticate to googlesource
+        if: steps.check.outputs.build == 'true'
+        env:
+          GOOGLESOURCE_COOKIES: ${{ secrets.GOOGLESOURCE_COOKIES }}
+        run: bash ci/.github/scripts/googlesource-auth.sh
+
+      # The Android tree is checked out for this build only. Its objects come
+      # from a cache that the nightly build shares, so a change is downloaded
+      # only once.
+      - name: Sync Android
+        if: steps.check.outputs.build == 'true'
+        run: |
+          ws="${RISE_WORKSPACE:-$HOME/rise}"
+          work="$ws/work/mesa-${{ matrix.board }}"
+          {
+            echo "WORK=$work"
+            echo "AOSP_WS=$work/aosp"
+            echo "MESA_WS=$work/mesa"
+          } >> "$GITHUB_ENV"
+          rm -rf "$work"
+          mkdir -p "$ws/cache/default" "$work/aosp"
+          cd "$ws/cache/default"
+          flock "$ws/cache/default.lock" sh -c "repo init -q -u $MANIFEST_URL -b $BRANCH -m default.xml &&
+            repo sync -q -n -c -j$(nproc) --no-tags"
+          cd "$work/aosp"
+          repo init -u "$MANIFEST_URL" -b "$BRANCH" -m default.xml --reference="$ws/cache/default"
+          # Mesa needs none of the LFS payloads the post-sync hook fetches.
+          repo sync -c -j"$(nproc)" --no-tags -d --no-verify
+
+      # The build runs code from every synced project.
+      - name: Remove the googlesource credentials
+        if: always()
+        run: bash ci/.github/scripts/googlesource-auth.sh --remove
+
+      # Mesa only needs the NDK sysroot, the bionic CRT objects and the
+      # platform libraries it links against.
+      - name: Build the Android libraries Mesa links against
+        if: steps.check.outputs.build == 'true'
+        shell: bash
+        run: |
+          cd "$AOSP_WS"
+          export OUT_DIR=out-${{ matrix.board }}
+          # envsetup.sh and lunch do not run under errexit.
+          set +e
+          source build/envsetup.sh
+          lunch ${{ matrix.lunch }} || exit 1
+          set -e
+          # The vendor variants are only installed when asked by path.
+          prod=$OUT_DIR/target/product/${{ matrix.board }}
+          m ndk crtbegin_dynamic crtend_android crtbrand \
+            "$prod"/vendor/lib64/{libbase,libcutils,libdrm,libgralloctypes,libhardware,libhidlbase,libui,libutils}.so \
+            "$prod"/system/lib64/{liblog,libnativewindow,libsync}.so
+
+      # The script deploys into the Android tree of this build.
+      - name: Build Mesa
+        if: steps.check.outputs.build == 'true'
+        run: |
+          git clone -q --depth 1 -b "$MESA_BRANCH" https://github.com/riseproject-dev/mesa.git "$MESA_WS"
+          cd "$MESA_WS"
+          bash build-mesa-powervr.sh --board=${{ matrix.board }} --aosp="$AOSP_WS" --out=out-${{ matrix.board }}
+
+      # The tarball keeps the file modes and symlinks that artifacts drop.
+      - name: Stage the prebuilts
+        if: steps.check.outputs.build == 'true'
+        run: |
+          stage="$WORK/artifact/${{ matrix.board }}"
+          mkdir -p "$stage"
+          tar -cf "$stage/prebuilts.tar" -C "$AOSP_WS/device/rise" ${{ matrix.path }}/lib64
+          echo ${{ matrix.path }}/lib64 > "$stage/path"
+          {
+            printf '%s\n\n' "${{ matrix.board }}: update the Mesa prebuilts"
+            python3 ci/.github/scripts/sources.py message \
+              --source "mesa@$MESA_BRANCH" --checkout "$MESA_WS"
+          } > "$stage/message"
+
+      - name: Upload the prebuilts
+        if: steps.check.outputs.build == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+        with:
+          name: mesa-${{ matrix.board }}
+          path: ${{ env.WORK }}/artifact
+          retention-days: 1
+
+      # Only the Android tree of the nightly build and the caches persist on
+      # the builder.
+      - name: Remove the sources and the build
+        if: always()
+        run: rm -rf "${RISE_WORKSPACE:-$HOME/rise}/work/mesa-${{ matrix.board }}" ci
+
+  publish:
+    needs: build
+    if: ${{ !cancelled() }}
+    uses: ./.github/workflows/_publish-prebuilts.yml
+    with:
+      artifact-pattern: mesa-*
+      paths: spacemit/k3/mesa/lib64 alibaba/a210/mesa/lib64
+    secrets:
+      app-private-key: ${{ secrets.RISEPROJECT_APP_PRIVATE_KEY }}

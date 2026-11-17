@@ -1,0 +1,153 @@
+name: kernel
+
+on:
+  # Sent by the kernel source repositories when they are pushed.
+  repository_dispatch:
+    types: [kernel-update]
+  schedule:
+    - cron: '37 */3 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Rebuild even if the kernel sources did not change
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: ${{ matrix.board }}
+    runs-on: aosp-builder
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - board: k3
+            manifest: kernel-spacemit.xml
+            target: //devices/rise/spacemit/spacemit_soc:spacemit_k3_dist
+            path: spacemit/kernel/mainline
+          - board: a210
+            manifest: kernel-alibaba.xml
+            target: //devices/rise/alibaba/a210:zhihe_a210_dist
+            path: alibaba/kernel/mainline
+    env:
+      BRANCH: android-17
+      MANIFEST_URL: https://github.com/riseproject-dev/android_manifest
+      MANIFEST_RAW: https://raw.githubusercontent.com/riseproject-dev/android_manifest/android-17
+    steps:
+      # Related pushes to several source repositories arrive within minutes;
+      # their dispatches queue behind this run and collapse into one check.
+      - name: Wait for related source pushes
+        if: github.event_name == 'repository_dispatch' && strategy.job-index == 0
+        run: sleep 180
+
+      - name: Check out the CI scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          ref: ${{ env.BRANCH }}
+          path: ci
+          sparse-checkout: .github
+
+      # The builder has a single runner, so no other job uses these. The
+      # cleanup steps of a job do not run when the runner itself stops.
+      - name: Remove the leftovers of interrupted jobs
+        run: |
+          bash ci/.github/scripts/googlesource-auth.sh --remove
+          rm -rf "${RISE_WORKSPACE:-$HOME/rise}"/work/* "${RISE_WORKSPACE:-$HOME/rise}"/aosp/out*
+
+      - name: Install the build tools
+        run: bash ci/.github/scripts/install-builder-tools.sh gh git-lfs rsync
+
+      - name: Check kernel sources
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ inputs.force || false }}
+        run: >-
+          python3 ci/.github/scripts/sources.py check
+          --manifest "$MANIFEST_RAW/${{ matrix.manifest }}"
+          --path ${{ matrix.path }} --marker android_kernel_common
+
+      - name: Authenticate to googlesource
+        if: steps.check.outputs.build == 'true'
+        env:
+          GOOGLESOURCE_COOKIES: ${{ secrets.GOOGLESOURCE_COOKIES }}
+        run: bash ci/.github/scripts/googlesource-auth.sh
+
+      # The kernel tree is checked out for this build only. Its objects come
+      # from a cache that persists on the builder and that both boards share,
+      # as their manifests list the same projects. The cache is a plain repo
+      # client rather than a mirror, as mirrors ignore clone-depth and would
+      # fetch the whole history of the prebuilts.
+      - name: Sync kernel sources
+        if: steps.check.outputs.build == 'true'
+        run: |
+          ws="${RISE_WORKSPACE:-$HOME/rise}"
+          cache="$ws/cache/kernel"
+          work="$ws/work/kernel-${{ matrix.board }}"
+          echo "WORK=$work" >> "$GITHUB_ENV"
+          rm -rf "$work"
+          mkdir -p "$cache" "$work/src"
+          cd "$cache"
+          flock "$cache.lock" sh -c "repo init -q -u $MANIFEST_URL -b $BRANCH -m ${{ matrix.manifest }} &&
+            repo sync -q -n -c -j$(nproc) --no-tags"
+          cd "$work/src"
+          repo init -u "$MANIFEST_URL" -b "$BRANCH" -m "${{ matrix.manifest }}" --reference="$cache"
+          repo sync -c -j"$(nproc)" --no-tags -d
+
+      # The build runs code from every synced project.
+      - name: Remove the googlesource credentials
+        if: always()
+        run: bash ci/.github/scripts/googlesource-auth.sh --remove
+
+      - name: Build the kernel distribution
+        if: steps.check.outputs.build == 'true'
+        run: |
+          cd "$WORK/src"
+          tools/bazel run --config=fast ${{ matrix.target }} -- --destdir="$WORK/dist/${{ matrix.path }}"
+
+      # The tarball keeps the file modes and symlinks that artifacts drop.
+      - name: Stage the prebuilts
+        if: steps.check.outputs.build == 'true'
+        run: |
+          stage="$WORK/artifact/${{ matrix.board }}"
+          mkdir -p "$stage"
+          # The releases ship the kernel sources pinned to the commits built.
+          (cd "$WORK/src" && repo manifest -r -o "$WORK/dist/${{ matrix.path }}/${{ matrix.manifest }}")
+          tar -cf "$stage/prebuilts.tar" -C "$WORK/dist" ${{ matrix.path }}
+          echo ${{ matrix.path }} > "$stage/path"
+          {
+            printf '%s\n\n' "${{ matrix.board }}: update the kernel prebuilts"
+            python3 ci/.github/scripts/sources.py message \
+              --manifest "$MANIFEST_RAW/${{ matrix.manifest }}" --checkout "$WORK/src"
+          } > "$stage/message"
+
+      - name: Upload the prebuilts
+        if: steps.check.outputs.build == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+        with:
+          name: kernel-${{ matrix.board }}
+          path: ${{ env.WORK }}/artifact
+          retention-days: 1
+
+      # Only the Android tree of the nightly build and the caches persist on
+      # the builder.
+      - name: Remove the sources and the build
+        if: always()
+        run: rm -rf "${RISE_WORKSPACE:-$HOME/rise}/work/kernel-${{ matrix.board }}" ci
+
+  publish:
+    needs: build
+    if: ${{ !cancelled() }}
+    uses: ./.github/workflows/_publish-prebuilts.yml
+    with:
+      artifact-pattern: kernel-*
+      paths: spacemit/kernel/mainline alibaba/kernel/mainline
+    secrets:
+      app-private-key: ${{ secrets.RISEPROJECT_APP_PRIVATE_KEY }}

@@ -1,0 +1,139 @@
+name: webview
+
+on:
+  # Sent by the WebView recipe repository when it is pushed.
+  repository_dispatch:
+    types: [webview-update]
+  schedule:
+    - cron: '57 */3 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Rebuild even if the WebView recipe did not change
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: webview
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: aosp-builder
+    # A clean Chromium build takes several hours.
+    timeout-minutes: 720
+    env:
+      BRANCH: android-17
+      RECIPE_BRANCH: android-17
+      APK: common/webview/SystemWebView64.apk
+    steps:
+      - name: Wait for related source pushes
+        if: github.event_name == 'repository_dispatch'
+        run: sleep 180
+
+      - name: Check out the CI scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          ref: ${{ env.BRANCH }}
+          path: ci
+          sparse-checkout: .github
+
+      # The builder has a single runner, so no other job uses these. The
+      # cleanup steps of a job do not run when the runner itself stops.
+      - name: Remove the leftovers of interrupted jobs
+        run: |
+          bash ci/.github/scripts/googlesource-auth.sh --remove
+          rm -rf "${RISE_WORKSPACE:-$HOME/rise}"/work/* "${RISE_WORKSPACE:-$HOME/rise}"/aosp/out*
+
+      # The APK verification unzips the APK and reads its ELF headers.
+      - name: Install the build tools
+        run: bash ci/.github/scripts/install-builder-tools.sh gh unzip binutils
+
+      - name: Check the WebView recipe
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ inputs.force || false }}
+        run: >-
+          python3 ci/.github/scripts/sources.py check
+          --source "android-webview-riscv64@$RECIPE_BRANCH"
+          --path common/webview --marker android-webview-riscv64
+
+      - name: Check out the WebView recipe
+        if: steps.check.outputs.build == 'true'
+        run: |
+          work="${RISE_WORKSPACE:-$HOME/rise}/work/webview"
+          {
+            echo "WORK=$work"
+            echo "RECIPE=$work/android-webview-riscv64"
+            echo "WORKSPACE=$work/workspace"
+          } >> "$GITHUB_ENV"
+          rm -rf "$work"
+          mkdir -p "$work"
+          git clone -q --depth 1 -b "$RECIPE_BRANCH" \
+            https://github.com/riseproject-dev/android-webview-riscv64.git "$work/android-webview-riscv64"
+
+      - name: Authenticate to googlesource
+        if: steps.check.outputs.build == 'true'
+        env:
+          GOOGLESOURCE_COOKIES: ${{ secrets.GOOGLESOURCE_COOKIES }}
+        run: bash ci/.github/scripts/googlesource-auth.sh
+
+      - name: Fetch the Chromium sources
+        if: steps.check.outputs.build == 'true'
+        run: |
+          cd "$RECIPE"
+          ./scripts/01-fetch.sh
+
+      # The build runs code from every fetched dependency.
+      - name: Remove the googlesource credentials
+        if: always()
+        run: bash ci/.github/scripts/googlesource-auth.sh --remove
+
+      - name: Build and verify the APK
+        if: steps.check.outputs.build == 'true'
+        run: |
+          cd "$RECIPE"
+          ./scripts/02-apply-series.sh
+          ./scripts/03-build.sh
+          ./scripts/04-verify-apk.sh
+
+      - name: Stage the APK
+        if: steps.check.outputs.build == 'true'
+        run: |
+          stage="$WORK/artifact/webview"
+          mkdir -p "$stage"
+          install -D -m 644 "$WORKSPACE/src/out/riscv64/apks/SystemWebView64.apk" "$WORK/dist/$APK"
+          tar -cf "$stage/prebuilts.tar" -C "$WORK/dist" "$APK"
+          echo "$APK" > "$stage/path"
+          {
+            printf '%s\n\n' "common: update the WebView prebuilt"
+            python3 ci/.github/scripts/sources.py message \
+              --source "android-webview-riscv64@$RECIPE_BRANCH" --checkout "$RECIPE"
+          } > "$stage/message"
+
+      - name: Upload the APK
+        if: steps.check.outputs.build == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+        with:
+          name: webview
+          path: ${{ env.WORK }}/artifact
+          retention-days: 1
+
+      # Only the Android tree of the nightly build and the caches persist on
+      # the builder.
+      - name: Remove the sources and the build
+        if: always()
+        run: rm -rf "${RISE_WORKSPACE:-$HOME/rise}/work/webview" ci
+
+  publish:
+    needs: build
+    uses: ./.github/workflows/_publish-prebuilts.yml
+    with:
+      artifact-pattern: webview
+      paths: common/webview/SystemWebView64.apk
+    secrets:
+      app-private-key: ${{ secrets.RISEPROJECT_APP_PRIVATE_KEY }}
