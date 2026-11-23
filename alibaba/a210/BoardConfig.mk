@@ -41,7 +41,8 @@ BOARD_VENDOR_RAMDISK_KERNEL_MODULES_LOAD := \
     $(KERNEL_MODULES_PATH)/ramdisk/gpio-dwapb.ko \
     $(KERNEL_MODULES_PATH)/ramdisk/cqhci.ko \
     $(KERNEL_MODULES_PATH)/ramdisk/sdhci-of-dwcmshc.ko \
-    $(KERNEL_MODULES_PATH)/ramdisk/dw_wdt.ko
+    $(KERNEL_MODULES_PATH)/ramdisk/dw_wdt.ko \
+    $(KERNEL_MODULES_PATH)/ramdisk/zhihe_wdt.ko
 
 # Vendor DLKM: loaded after rootfs mount. PowerVR GPU stack listed first,
 # in dependency order (drm_exec -> drm_gpuvm, gpu-sched -> powervr).
