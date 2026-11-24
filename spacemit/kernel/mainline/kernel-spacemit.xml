@@ -6,7 +6,7 @@
   <default remote="aosp" revision="main-kernel" sync-j="4"/>
   
   <project name="android_kernel_common" path="common" remote="rise" revision="5bcddbf83cd5e978e533eb8bb20cc6a87f39ab74" upstream="android-mainline-spacemit" dest-branch="android-mainline-spacemit"/>
-  <project name="android_kernel_device" path="devices/rise" remote="rise" revision="6669e32075a161e87aa5b025b4ada823894fc91d" upstream="android-17" dest-branch="android-17">
+  <project name="android_kernel_device" path="devices/rise" remote="rise" revision="78c614bcc829e1fa6d7175a8edcb9b847302a03f" upstream="android-17" dest-branch="android-17">
     <linkfile src="spacemit/spacemit_soc/device.bazelrc" dest="device.bazelrc"/>
   </project>
   <project name="device/google/cuttlefish_vmm" path="prebuilts/vmm" revision="5b093ef747bf180a3a73813e134ec6c8de489333" upstream="main-kernel" clone-depth="1"/>
